@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aplikasi Kasir Digital & QR Menu Mandiri | SaaS Kuliner Modern</title>
+    <title>QRMENU-PRO | Aplikasi Kasir Digital & QR Menu Berkelas Bintang 5</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <!-- FontAwesome Icons -->
@@ -14,175 +14,269 @@
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; color: #1e293b; }
-        .gradient-hero { background: linear-gradient(135deg, #f0f4ff 0%, #fffbeb 100%); }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; color: #1e293b; overflow-x: hidden; }
+        .gradient-hero { background: linear-gradient(135deg, #f0f4ff 0%, #fffbeb 50%, #fef3c7 100%); }
         .gold-badge { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: #ffffff; }
         .gold-text { background: linear-gradient(135deg, #d97706 0%, #b45309 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .btn-gold { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: #ffffff; transition: all 0.3s ease; box-shadow: 0 10px 25px -5px rgba(245, 158, 11, 0.4); }
-        .btn-gold:hover { transform: translateY(-3px); box-shadow: 0 15px 30px -5px rgba(245, 158, 11, 0.6); }
-        .card-hover { transition: all 0.3s ease; }
-        .card-hover:hover { transform: translateY(-5px); box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.08); }
+        .btn-gold:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 15px 30px -5px rgba(245, 158, 11, 0.6); }
+        .card-luxury { background: #ffffff; border: 1px solid rgba(226, 232, 240, 0.8); transition: all 0.3s ease; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05); }
+        .card-luxury:hover { transform: translateY(-5px); box-shadow: 0 20px 40px -15px rgba(245, 158, 11, 0.15); border-color: rgba(245, 158, 11, 0.4); }
         .image-glow { box-shadow: 0 25px 50px -12px rgba(245, 158, 11, 0.25); }
+        .timer-box { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border: 1px solid rgba(245, 158, 11, 0.4); }
     </style>
 </head>
 <body class="selection:bg-amber-500 selection:text-white">
 
     <!-- HEADER / NAVBAR -->
-    <header class="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-md z-50 border-b border-slate-100">
+    <header class="fixed top-0 left-0 right-0 bg-white/90 backdrop-blur-md z-50 border-b border-slate-100 shadow-sm">
         <div class="max-w-6xl mx-auto px-4 h-20 flex justify-between items-center">
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2.5">
                 <div class="w-10 h-10 rounded-xl gold-badge flex items-center justify-center text-white font-black text-lg shadow-md">
-                    <i class="fa-solid fa-utensils"></i>
+                    <i class="fa-solid fa-crown"></i>
                 </div>
-                <span class="font-extrabold text-lg text-slate-900 tracking-tight">QRMENU<span class="text-amber-600">.PRO</span></span>
+                <span class="font-extrabold text-xl text-slate-900 tracking-tight">QRMENU<span class="text-amber-600">-PRO</span></span>
             </div>
             <a href="http://lynk.id/ilmurahasia/pwp32kyp81oy/checkout" target="_blank" class="btn-gold px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider">
-                Mulai Berlangganan[cite: 1]
+                Ambil Promo 77rb[cite: 1]
             </a>
         </div>
     </header>
 
     <!-- HERO SECTION -->
-    <section class="gradient-hero pt-32 pb-20 px-4 overflow-hidden">
+    <section class="gradient-hero pt-36 pb-20 px-4 overflow-hidden">
         <div class="max-w-5xl mx-auto text-center space-y-6" data-aos="fade-up" data-aos-duration="800">
-            <span class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-200">
-                <i class="fa-solid fa-crown text-amber-600"></i> Solusi SaaS Kuliner No. 1 di Indonesia
+            <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-black bg-amber-100 text-amber-900 border border-amber-300 shadow-sm">
+                <i class="fa-solid fa-fire text-red-600 animate-bounce"></i> GAYA HOTEL BINTANG 5, HARGA KAKI LIMA!
             </span>
             <h1 class="text-3xl sm:text-5xl lg:text-6xl font-black text-slate-900 leading-tight">
-                Ubah Meja Warung & Cafe Anda Menjadi <span class="gold-text">Kasir Digital Otomatis</span>
+                Miliki Aplikasi Order Otomatis & Ubah Toko Anda Jadi <span class="gold-text">Kelas Internasional</span>
             </h1>
             <p class="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
-                Tinggalkan cara lama yang ribet! Pelanggan cukup scan QR Code di meja, pilih menu, dan pesanan langsung masuk rapi berbentuk tabel struk ke WhatsApp Anda. Tanpa instal aplikasi tambahan!
+                Ubah warung, toko, kafe, jajanan, atau restoran biasa Anda menjadi berkelas mewah dalam hitungan detik! Pelanggan tinggal duduk manis, scan barcode di meja, pilih menu, dan pesanan langsung masuk otomatis ke dapur.
             </p>
             <div class="pt-2 flex flex-col sm:flex-row justify-center gap-4">
                 <a href="http://lynk.id/ilmurahasia/pwp32kyp81oy/checkout" target="_blank" class="btn-gold px-8 py-4 rounded-2xl text-sm font-extrabold uppercase tracking-wider flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-cart-shopping"></i> Ambil Promo Spesial Sekarang[cite: 1]
+                    <i class="fa-solid fa-cart-shopping"></i> AMANKAN PROMO 77RB SEKARANG[cite: 1]
                 </a>
             </div>
-            <p class="text-xs text-slate-500 pt-2"><i class="fa-solid fa-shield-check text-emerald-600 mr-1"></i> Lisensi resmi aktif langsung otomatis • 100% Aman & Terpercaya</p>
+            <p class="text-xs text-slate-500 pt-2"><i class="fa-solid fa-shield-check text-emerald-600 mr-1"></i> Telah dibuktikan ratusan pengusaha kuliner • 100% Aman & Instan</p>
 
             <!-- ILUSTRASI / FOTO RESTORAN & SCAN QR CODE -->
             <div class="pt-8" data-aos="zoom-in" data-aos-duration="1000">
                 <div class="relative max-w-4xl mx-auto rounded-3xl overflow-hidden border-4 border-white image-glow">
-                    <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=1200&auto=format&fit=crop" alt="Suasana Restoran Scan Barcode QR Menu" class="w-full h-[320px] sm:h-[450px] object-cover">
+                    <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=1200&auto=format&fit=crop" alt="Pelanggan Scan QR Code di Meja Restoran" class="w-full h-[320px] sm:h-[450px] object-cover">
                     <div class="absolute bottom-4 left-4 right-4 sm:left-auto sm:right-6 sm:bottom-6 bg-slate-900/90 backdrop-blur-md text-white px-6 py-4 rounded-2xl border border-amber-400/40 text-left space-y-1 shadow-2xl">
                         <div class="flex items-center gap-2 text-amber-400 text-xs font-bold uppercase tracking-wider">
-                            <i class="fa-solid fa-mobile-screen-button"></i> Pengalaman Pelanggan
+                            <i class="fa-solid fa-qrcode"></i> Teknologi Scan & Order Otomatis
                         </div>
-                        <p class="text-xs sm:text-sm font-semibold text-slate-200">Scan QR di meja ➔ Pilih menu ➔ Order masuk WhatsApp kasir!</p>
+                        <p class="text-xs sm:text-sm font-semibold text-slate-200">Pelanggan scan barcode di meja ➔ Pilih menu ➔ Nota masuk rapi ke WhatsApp!</p>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- KEUNGGULAN UTAMA SECTION -->
-    <section class="py-20 px-4 bg-white">
+    <!-- SECTION: LEDAKAN PROMO (DENGAN COUNTDOWN TIMER 10 JAM MENGHITUNG MUNDUR) -->
+    <section class="py-16 px-4 bg-white">
+        <div class="max-w-4xl mx-auto" data-aos="fade-up">
+            <div class="card-luxury p-8 sm:p-10 rounded-3xl border-2 border-amber-400 text-center space-y-6 relative overflow-hidden bg-gradient-to-b from-amber-50/40 to-white">
+                <div class="absolute top-0 right-0 bg-red-600 text-white font-black text-xs px-4 py-2 rounded-bl-2xl shadow-md uppercase tracking-wider animate-pulse">
+                    PROMO TERBATAS HARI INI ⚡
+                </div>
+                <div class="space-y-2">
+                    <h3 class="text-xs font-black tracking-widest text-amber-600 uppercase">LEDAKAN PROMO BULAN INI</h3>
+                    <h4 class="text-2xl sm:text-4xl font-black text-slate-900">Full Akses Lisensi 1 Tahun Penuh</h4>
+                </div>
+
+                <!-- COUNTDOWN TIMER 10 JAM -->
+                <div class="py-2">
+                    <p class="text-xs font-bold text-red-600 uppercase tracking-widest mb-3"><i class="fa-regular fa-clock mr-1 animate-spin"></i> PROMO AKAN BERAKHIR DALAM:</p>
+                    <div class="flex justify-center items-center gap-3 text-white">
+                        <div class="timer-box px-4 py-3 rounded-2xl shadow-lg text-center min-w-[70px]">
+                            <span id="hours" class="text-2xl sm:text-3xl font-black text-amber-400">10</span>
+                            <span class="block text-[10px] text-slate-400 uppercase tracking-wider">Jam</span>
+                        </div>
+                        <span class="text-2xl font-black text-amber-500">:</span>
+                        <div class="timer-box px-4 py-3 rounded-2xl shadow-lg text-center min-w-[70px]">
+                            <span id="minutes" class="text-2xl sm:text-3xl font-black text-amber-400">00</span>
+                            <span class="block text-[10px] text-slate-400 uppercase tracking-wider">Menit</span>
+                        </div>
+                        <span class="text-2xl font-black text-amber-500">:</span>
+                        <div class="timer-box px-4 py-3 rounded-2xl shadow-lg text-center min-w-[70px]">
+                            <span id="seconds" class="text-2xl sm:text-3xl font-black text-amber-400">00</span>
+                            <span class="block text-[10px] text-slate-400 uppercase tracking-wider">Detik</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="py-2 space-y-1">
+                    <span class="text-sm font-bold text-slate-400">Harga Normal: <span class="line-through text-red-500 font-extrabold">Rp 250.000</span></span>
+                    <div class="text-4xl sm:text-6xl font-black text-amber-600 tracking-tight">
+                        HANYA Rp 77.000 <span class="text-sm font-bold text-slate-600 block sm:inline">/ Tahun</span>
+                    </div>
+                    <p class="text-xs text-slate-500 pt-1">Bisa diperpanjang kembali setelah masa aktif habis.</p>
+                </div>
+                <div class="max-w-md mx-auto">
+                    <a href="http://lynk.id/ilmurahasia/pwp32kyp81oy/checkout" target="_blank" class="btn-gold w-full py-4 rounded-2xl text-sm font-black uppercase tracking-wider block shadow-xl text-center">
+                        AMANKAN KUOTA PROMONYA SEKARANG[cite: 1]
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION: DETAIL FITUR BERKELAS BINTANG 5 -->
+    <section class="py-20 px-4 bg-slate-50 border-y border-slate-200/60">
         <div class="max-w-6xl mx-auto space-y-16">
             <div class="text-center space-y-3" data-aos="fade-up">
-                <h2 class="text-xs font-extrabold tracking-widest text-amber-600 uppercase">Kenapa Harus Memilih Kami?</h2>
-                <h3 class="text-2xl sm:text-4xl font-black text-slate-900">Fitur Mewah, Harga Kaki Lima, Hasil Luar Biasa</h3>
+                <h2 class="text-xs font-extrabold tracking-widest text-amber-600 uppercase">Fitur Kelas Dunia</h2>
+                <h3 class="text-2xl sm:text-4xl font-black text-slate-900">Apa Saja Fitur Berkelas Bintang 5 yang Anda Dapatkan?</h3>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="card-hover bg-slate-50 border border-slate-100 p-8 rounded-3xl space-y-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="card-luxury p-8 rounded-3xl space-y-4" data-aos="fade-up" data-aos-delay="100">
                     <div class="w-14 h-14 rounded-2xl bg-amber-500/10 text-amber-600 flex items-center justify-center text-2xl font-bold">
-                        <i class="fa-solid fa-bolt"></i>
+                        <i class="fa-solid fa-store"></i>
                     </div>
-                    <h4 class="font-extrabold text-lg text-slate-900">100% Tanpa Ribet / Instan</h4>
+                    <h4 class="font-extrabold text-lg text-slate-900">Toko Online 24 Jam Non-Stop</h4>
                     <p class="text-sm text-slate-600 leading-relaxed">
-                        Tidak perlu install mesin kasir mahal atau langganan bulanan yang memberatkan. Cukup buka lewat browser HP/Laptop Anda.
+                        Bisnis Anda punya platform digital sendiri yang bisa diakses kapan pun oleh pelanggan tanpa batasan waktu.
                     </p>
                 </div>
 
-                <div class="card-hover bg-slate-50 border border-slate-100 p-8 rounded-3xl space-y-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="card-luxury p-8 rounded-3xl space-y-4" data-aos="fade-up" data-aos-delay="200">
                     <div class="w-14 h-14 rounded-2xl bg-blue-500/10 text-blue-600 flex items-center justify-center text-2xl font-bold">
-                        <i class="fa-solid fa-cloud"></i>
+                        <i class="fa-solid fa-qrcode"></i>
                     </div>
-                    <h4 class="font-extrabold text-lg text-slate-900">Sistem Cloud Terpusat</h4>
+                    <h4 class="font-extrabold text-lg text-slate-900">Barcode (QR Code) Meja Eksklusif</h4>
                     <p class="text-sm text-slate-600 leading-relaxed">
-                        Semua data menu, harga, dan manajemen toko tersimpan otomatis di server awan yang sangat aman, cepat, dan real-time.
+                        Cukup cetak dan pajang barcode mewah di meja kasir atau meja makan. Pelanggan tinggal scan pakai HP untuk pesan sendiri!
                     </p>
                 </div>
 
-                <div class="card-hover bg-slate-50 border border-slate-100 p-8 rounded-3xl space-y-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="card-luxury p-8 rounded-3xl space-y-4" data-aos="fade-up" data-aos-delay="300">
                     <div class="w-14 h-14 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center text-2xl font-bold">
-                        <i class="fa-solid fa-receipt"></i>
+                        <i class="fa-solid fa-utensils"></i>
                     </div>
-                    <h4 class="font-extrabold text-lg text-slate-900">Format Nota WhatsApp Rapi</h4>
+                    <h4 class="font-extrabold text-lg text-slate-900">Katalog Digital Super Rapi</h4>
                     <p class="text-sm text-slate-600 leading-relaxed">
-                        Pesanan dari pembeli masuk ke WhatsApp Anda dalam bentuk tabel struk rapi beserta status lunas/belum lunas secara akurat.
+                        Atur daftar menu makanan ringan, jajanan, atau makanan berat lengkap dengan foto HD, kategori, dan harga elegan.
                     </p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- MANFAAT & HARGA PROMO (KOLOM HARGA 450.000 MENJADI 77.000) -->
-    <section class="py-20 px-4 bg-slate-50 border-y border-slate-200/60">
-        <div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-            <div class="space-y-6" data-aos="fade-right">
-                <span class="px-3 py-1 rounded-lg text-xs font-bold bg-blue-100 text-blue-800">Manfaat Langsung</span>
-                <h3 class="text-2xl sm:text-3xl font-black text-slate-900 leading-snug">
-                    Tingkatkan Omset & Kurangi Kesalahan Catat Pesanan
-                </h3>
-                <div class="space-y-4">
-                    <div class="flex items-start gap-3">
-                        <div class="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center shrink-0 mt-0.5 text-xs">✓</div>
-                        <p class="text-sm text-slate-600"><strong class="text-slate-900">Hemat Waktu Pelayanan:</strong> Pelanggan pesan mandiri lewat meja tanpa harus antre manggil pelayan.</p>
+    <!-- SECTION: TAMPILAN APLIKASI DI SISI KONSUMEN & ADMIN -->
+    <section class="py-20 px-4 bg-white">
+        <div class="max-w-5xl mx-auto space-y-16">
+            <div class="text-center space-y-3" data-aos="fade-up">
+                <h2 class="text-xs font-extrabold tracking-widest text-amber-600 uppercase">Sangat Mudah Digunakan</h2>
+                <h3 class="text-2xl sm:text-4xl font-black text-slate-900">Bagaimana Cara Kerja Aplikasi Ini?</h3>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="card-luxury p-8 rounded-3xl space-y-4 border-l-4 border-l-blue-600" data-aos="fade-right">
+                    <div class="text-blue-600 font-extrabold text-xs uppercase tracking-wider">Panel Pengelola Toko</div>
+                    <h4 class="text-xl font-black text-slate-900">Mudah Atur Menu & Harga</h4>
+                    <ul class="space-y-2.5 text-sm text-slate-600">
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-emerald-500"></i> Input Nama Menu & Kategori dengan cepat</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-emerald-500"></i> Input Harga otomatis tersimpan rapi</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-emerald-500"></i> Input Nama Toko & WhatsApp Penerima Order</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-emerald-500"></i> Auto-Generate Link & QR Code Meja</li>
+                    </ul>
+                </div>
+
+                <div class="card-luxury p-8 rounded-3xl space-y-4 border-l-4 border-l-amber-500" data-aos="fade-left">
+                    <div class="text-amber-600 font-extrabold text-xs uppercase tracking-wider">Tampilan di Konsumen</div>
+                    <h4 class="text-xl font-black text-slate-900">Tinggal Klik, Pesan, & Bayar</h4>
+                    <ul class="space-y-2.5 text-sm text-slate-600">
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-emerald-500"></i> Pilihan menu tinggal klik (Tambah/Kurang Qty)</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-emerald-500"></i> Total harga terhitung otomatis secara real-time</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-emerald-500"></i> Fitur Pembayaran (Transfer/QRIS atau Cash)</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-emerald-500"></i> Kirim pesanan instan berbentuk nota tabel ke WhatsApp</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION: CARA PEMAKAIAN & AKTIVASI TOKEN (TERPERINCI) -->
+    <section class="py-20 px-4 bg-slate-50 border-t border-slate-200/60">
+        <div class="max-w-4xl mx-auto space-y-12">
+            <div class="text-center space-y-3" data-aos="fade-up">
+                <span class="px-3 py-1 rounded-lg text-xs font-bold bg-amber-100 text-amber-800">Panduan Lengkap</span>
+                <h3 class="text-2xl sm:text-4xl font-black text-slate-900">Cara Aktivasi & Pemakaian Aplikasi (Terperinci)</h3>
+            </div>
+
+            <div class="space-y-6">
+                <div class="card-luxury p-6 sm:p-8 rounded-3xl flex flex-col sm:flex-row gap-6 items-start" data-aos="fade-up">
+                    <div class="w-12 h-12 rounded-2xl gold-badge flex items-center justify-center font-black text-lg shrink-0">1</div>
+                    <div class="space-y-2">
+                        <h4 class="font-extrabold text-lg text-slate-900">Lakukan Pembayaran di Lynk.id</h4>
+                        <p class="text-sm text-slate-600 leading-relaxed">
+                            Klik tombol pembelian, masukkan email aktif Anda, dan pilih metode pembayaran favorit Anda (ShopeePay, QRIS, OVO, atau DANA). Tanpa biaya admin tambahan!
+                        </p>
                     </div>
-                    <div class="flex items-start gap-3">
-                        <div class="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center shrink-0 mt-0.5 text-xs">✓</div>
-                        <p class="text-sm text-slate-600"><strong class="text-slate-900">Anti Salah Menu & Meja:</strong> Nama pemesan dan nomor meja tercatat jelas di nota WhatsApp.</p>
+                </div>
+
+                <div class="card-luxury p-6 sm:p-8 rounded-3xl flex flex-col sm:flex-row gap-6 items-start" data-aos="fade-up">
+                    <div class="w-12 h-12 rounded-2xl gold-badge flex items-center justify-center font-black text-lg shrink-0">2</div>
+                    <div class="space-y-2">
+                        <h4 class="font-extrabold text-lg text-slate-900">Terima Token Akses Instan</h4>
+                        <p class="text-sm text-slate-600 leading-relaxed">
+                            Sistem otomatis mengirimkan akses dan token unik langsung ke email Anda setelah pembayaran berhasil. Tanpa nunggu kurir, langsung bisa disetting hari ini juga!
+                        </p>
                     </div>
-                    <div class="flex items-start gap-3">
-                        <div class="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center shrink-0 mt-0.5 text-xs">✓</div>
-                        <p class="text-sm text-slate-600"><strong class="text-slate-900">Lisensi 1 Tahun Penuh:</strong> Bayar sekali untuk masa aktif 12 bulan tanpa biaya tersembunyi.</p>
+                </div>
+
+                <div class="card-luxury p-6 sm:p-8 rounded-3xl flex flex-col sm:flex-row gap-6 items-start" data-aos="fade-up">
+                    <div class="w-12 h-12 rounded-2xl gold-badge flex items-center justify-center font-black text-lg shrink-0">3</div>
+                    <div class="space-y-2">
+                        <h4 class="font-extrabold text-lg text-slate-900">Login & Setting Toko Anda</h4>
+                        <p class="text-sm text-slate-600 leading-relaxed">
+                            Buka panel aplikasi admin, masukkan data toko (Username, Password, Nama Toko, WhatsApp), lalu klik <strong>Generate Token</strong>. Aplikasi langsung terkunci di perangkat Anda dan siap digunakan selama 1 tahun penuh!
+                        </p>
                     </div>
                 </div>
             </div>
 
-            <!-- KOTAK HARGA PROMO (450.000 -> 77.000) -->
-            <div class="bg-white p-8 rounded-3xl shadow-xl border-2 border-amber-400 space-y-6 relative" data-aos="fade-left">
-                <div class="absolute -top-4 -right-4 bg-red-600 text-white font-black text-xs px-3.5 py-1.5 rounded-xl shadow-md rotate-3 animate-pulse">
-                    PROMO SPESIAL ⚡
-                </div>
-                <div class="space-y-2 text-center sm:text-left">
-                    <h4 class="font-extrabold text-lg text-slate-900">Paket Lisensi Eksklusif 1 Tahun</h4>
-                    <p class="text-xs text-slate-500">Akses penuh selamanya untuk 1 perangkat toko Anda.</p>
-                </div>
-                
-                <!-- BAGIAN HARGA CORET DAN PROMO -->
-                <div class="py-4 border-y border-slate-100 text-center space-y-2 bg-amber-50/50 rounded-2xl p-4">
-                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Harga Normal: <span class="line-through text-red-500 font-extrabold">Rp 450.000</span></span>
-                    <div class="text-3xl sm:text-4xl font-black text-amber-600 tracking-tight">
-                        Rp 77.000 <span class="text-xs font-bold text-slate-600 block sm:inline">/ Tahun (Hemat 83%)</span>
-                    </div>
-                </div>
+            <div class="bg-amber-50 border border-amber-200 p-6 sm:p-8 rounded-3xl space-y-3" data-aos="fade-up">
+                <h4 class="font-extrabold text-sm text-amber-900 uppercase flex items-center gap-2">
+                    <i class="fa-solid fa-triangle-exclamation text-amber-600"></i> Perhatian & Ketentuan Eksklusif Lisensi:
+                </h4>
+                <ul class="text-xs sm:text-sm text-slate-700 space-y-2 leading-relaxed">
+                    <li>🔒 <strong>1x Check-out HANYA BERLAKU UNTUK 1 PERANGKAT</strong> (HP / Tablet / PC). Lisensi murni untuk bisnis Anda sendiri (Tidak untuk diperjualbelikan kembali).</li>
+                    <li>📱 <strong>Aturan Check-out Bertahap:</strong> Jika Anda membutuhkan aplikasi untuk perangkat/cabang lain, wajib melakukan check-out baru secara terpisah (jangan langsung order borongan sekaligus dalam 1 transaksi). Mengapa? Karena setiap check-out akan menghasilkan <strong>TOKEN AKTIVASI UNIK</strong> yang berbeda untuk masing-masing perangkat!</li>
+                </ul>
+            </div>
+        </div>
+    </section>
 
-                <div class="space-y-2 text-xs text-slate-600">
-                    <div class="flex justify-between">
-                        <span>Masa Aktif:</span>
-                        <span class="font-bold text-slate-900">12 Bulan (365 Hari)</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span>Setup Sistem:</span>
-                        <span class="font-bold text-emerald-600">Otomatis (Instant)</span>
-                    </div>
-                </div>
-
-                <a href="http://lynk.id/ilmurahasia/pwp32kyp81oy/checkout" target="_blank" class="btn-gold w-full py-4 rounded-2xl text-xs sm:text-sm font-black uppercase tracking-wider block text-center shadow-lg">
-                    AMANKAN PROMO 77RB SEKARANG[cite: 1]
+    <!-- SECTION: CTA AKHIR -->
+    <section class="py-20 px-4 bg-white text-center">
+        <div class="max-w-3xl mx-auto space-y-6" data-aos="zoom-in">
+            <h3 class="text-3xl sm:text-4xl font-black text-slate-900">
+                Ubah Warung Biasa Jadi Berasa di Hotel Bintang 5!
+            </h3>
+            <p class="text-sm sm:text-base text-slate-600">
+                Modal kecil, gengsi naik drastis, cuan otomatis mengalir deras! Pasang barcode toko Anda, dan siap-siap banjir orderan tanpa henti.
+            </p>
+            <div class="pt-2">
+                <a href="http://lynk.id/ilmurahasia/pwp32kyp81oy/checkout" target="_blank" class="btn-gold px-10 py-5 rounded-2xl text-base font-black uppercase tracking-wider inline-block shadow-2xl">
+                    👉 KLIK BUY NOW SEKARANG[cite: 1]
                 </a>
             </div>
+            <p class="text-xs text-slate-400">🔥 Promo spesial Rp77.000 untuk 1 tahun penuh segera berakhir!</p>
         </div>
     </section>
 
     <!-- FOOTER -->
-    <footer class="py-12 bg-white text-center text-xs text-slate-500 border-t border-slate-200">
+    <footer class="py-12 bg-slate-900 text-slate-400 text-center text-xs">
         <div class="max-w-6xl mx-auto px-4 space-y-4">
-            <p class="font-bold text-slate-800 text-sm">QRMENU.PRO — Platform SaaS Kasir Mandiri & QR Menu Kuliner Indonesia</p>
-            <p>&copy; 2026 All Rights Reserved. Powered by Cloud & WhatsApp Integration.</p>
+            <p class="font-bold text-white text-sm">QRMENU-PRO — Platform SaaS Kasir Mandiri & QR Menu Kuliner Indonesia</p>
+            <p>&copy; 2026 All Rights Reserved. GAYA HOTEL BINTANG 5, HARGA KAKI LIMA!</p>
         </div>
     </footer>
 
@@ -194,6 +288,35 @@
             duration: 800,
             offset: 50
         });
+
+        // COUNTDOWN TIMER 10 JAM
+        function startCountdown() {
+            // Waktu target 10 jam dari sekarang (atau disimpan di localStorage agar stabil)
+            let totalSeconds = 10 * 3600; 
+
+            const hoursEl = document.getElementById('hours');
+            const minutesEl = document.getElementById('minutes');
+            const secondsEl = document.getElementById('seconds');
+
+            const timer = setInterval(() => {
+                if (totalSeconds <= 0) {
+                    clearInterval(timer);
+                    totalSeconds = 10 * 3600; // Reset otomatis jika habis
+                }
+
+                totalSeconds--;
+
+                const hours = Math.floor(totalSeconds / 3600);
+                const minutes = Math.floor((totalSeconds % 3600) / 60);
+                const seconds = totalSeconds % 60;
+
+                hoursEl.textContent = String(hours).padStart(2, '0');
+                minutesEl.textContent = String(minutes).padStart(2, '0');
+                secondsEl.textContent = String(seconds).padStart(2, '0');
+            }, 1000);
+        }
+
+        startCountdown();
     </script>
 </body>
 </html>
