@@ -22,6 +22,7 @@
         .btn-gold:hover { transform: translateY(-3px); box-shadow: 0 15px 30px -5px rgba(245, 158, 11, 0.6); }
         .card-hover { transition: all 0.3s ease; }
         .card-hover:hover { transform: translateY(-5px); box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.08); }
+        .image-glow { box-shadow: 0 25px 50px -12px rgba(245, 158, 11, 0.25); }
     </style>
 </head>
 <body class="selection:bg-amber-500 selection:text-white">
@@ -53,12 +54,25 @@
             <p class="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
                 Tinggalkan cara lama yang ribet! Pelanggan cukup scan QR Code di meja, pilih menu, dan pesanan langsung masuk rapi berbentuk tabel struk ke WhatsApp Anda. Tanpa instal aplikasi tambahan!
             </p>
-            <div class="pt-4 flex flex-col sm:flex-row justify-center gap-4">
+            <div class="pt-2 flex flex-col sm:flex-row justify-center gap-4">
                 <a href="http://lynk.id/ilmurahasia/pwp32kyp81oy/checkout" target="_blank" class="btn-gold px-8 py-4 rounded-2xl text-sm font-extrabold uppercase tracking-wider flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-cart-shopping"></i> Ambil Akses Lisensi 1 Tahun Sekarang[cite: 1]
+                    <i class="fa-solid fa-cart-shopping"></i> Ambil Promo Spesial Sekarang[cite: 1]
                 </a>
             </div>
             <p class="text-xs text-slate-500 pt-2"><i class="fa-solid fa-shield-check text-emerald-600 mr-1"></i> Lisensi resmi aktif langsung otomatis • 100% Aman & Terpercaya</p>
+
+            <!-- ILUSTRASI / FOTO RESTORAN & SCAN QR CODE -->
+            <div class="pt-8" data-aos="zoom-in" data-aos-duration="1000">
+                <div class="relative max-w-4xl mx-auto rounded-3xl overflow-hidden border-4 border-white image-glow">
+                    <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=1200&auto=format&fit=crop" alt="Suasana Restoran Scan Barcode QR Menu" class="w-full h-[320px] sm:h-[450px] object-cover">
+                    <div class="absolute bottom-4 left-4 right-4 sm:left-auto sm:right-6 sm:bottom-6 bg-slate-900/90 backdrop-blur-md text-white px-6 py-4 rounded-2xl border border-amber-400/40 text-left space-y-1 shadow-2xl">
+                        <div class="flex items-center gap-2 text-amber-400 text-xs font-bold uppercase tracking-wider">
+                            <i class="fa-solid fa-mobile-screen-button"></i> Pengalaman Pelanggan
+                        </div>
+                        <p class="text-xs sm:text-sm font-semibold text-slate-200">Scan QR di meja ➔ Pilih menu ➔ Order masuk WhatsApp kasir!</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -71,7 +85,6 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <!-- Card 1 -->
                 <div class="card-hover bg-slate-50 border border-slate-100 p-8 rounded-3xl space-y-4" data-aos="fade-up" data-aos-delay="100">
                     <div class="w-14 h-14 rounded-2xl bg-amber-500/10 text-amber-600 flex items-center justify-center text-2xl font-bold">
                         <i class="fa-solid fa-bolt"></i>
@@ -82,7 +95,6 @@
                     </p>
                 </div>
 
-                <!-- Card 2 (REVISI: Fokus ke Cloud Terpusat yang Cepat) -->
                 <div class="card-hover bg-slate-50 border border-slate-100 p-8 rounded-3xl space-y-4" data-aos="fade-up" data-aos-delay="200">
                     <div class="w-14 h-14 rounded-2xl bg-blue-500/10 text-blue-600 flex items-center justify-center text-2xl font-bold">
                         <i class="fa-solid fa-cloud"></i>
@@ -93,7 +105,6 @@
                     </p>
                 </div>
 
-                <!-- Card 3 -->
                 <div class="card-hover bg-slate-50 border border-slate-100 p-8 rounded-3xl space-y-4" data-aos="fade-up" data-aos-delay="300">
                     <div class="w-14 h-14 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center text-2xl font-bold">
                         <i class="fa-solid fa-receipt"></i>
@@ -107,7 +118,7 @@
         </div>
     </section>
 
-    <!-- MANFAAT UNTUK PEMILIK USAHA -->
+    <!-- MANFAAT & HARGA PROMO (KOLOM HARGA 450.000 MENJADI 77.000) -->
     <section class="py-20 px-4 bg-slate-50 border-y border-slate-200/60">
         <div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <div class="space-y-6" data-aos="fade-right">
@@ -131,27 +142,37 @@
                 </div>
             </div>
 
-            <!-- Card Ilustrasi / Testimoni Mini -->
-            <div class="bg-white p-8 rounded-3xl shadow-xl border border-slate-100 space-y-6 relative" data-aos="fade-left">
-                <div class="absolute -top-4 -right-4 bg-amber-400 text-blue-950 font-black text-xs px-3 py-1.5 rounded-xl shadow-md rotate-3">
-                    HOT DEAL 🔥
+            <!-- KOTAK HARGA PROMO (450.000 -> 77.000) -->
+            <div class="bg-white p-8 rounded-3xl shadow-xl border-2 border-amber-400 space-y-6 relative" data-aos="fade-left">
+                <div class="absolute -top-4 -right-4 bg-red-600 text-white font-black text-xs px-3.5 py-1.5 rounded-xl shadow-md rotate-3 animate-pulse">
+                    PROMO SPESIAL ⚡
                 </div>
-                <div class="space-y-2">
+                <div class="space-y-2 text-center sm:text-left">
                     <h4 class="font-extrabold text-lg text-slate-900">Paket Lisensi Eksklusif 1 Tahun</h4>
                     <p class="text-xs text-slate-500">Akses penuh selamanya untuk 1 perangkat toko Anda.</p>
                 </div>
-                <div class="py-4 border-y border-slate-100 space-y-2">
-                    <div class="flex justify-between text-sm">
-                        <span class="text-slate-600">Masa Aktif:</span>
+                
+                <!-- BAGIAN HARGA CORET DAN PROMO -->
+                <div class="py-4 border-y border-slate-100 text-center space-y-2 bg-amber-50/50 rounded-2xl p-4">
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Harga Normal: <span class="line-through text-red-500 font-extrabold">Rp 450.000</span></span>
+                    <div class="text-3xl sm:text-4xl font-black text-amber-600 tracking-tight">
+                        Rp 77.000 <span class="text-xs font-bold text-slate-600 block sm:inline">/ Tahun (Hemat 83%)</span>
+                    </div>
+                </div>
+
+                <div class="space-y-2 text-xs text-slate-600">
+                    <div class="flex justify-between">
+                        <span>Masa Aktif:</span>
                         <span class="font-bold text-slate-900">12 Bulan (365 Hari)</span>
                     </div>
-                    <div class="flex justify-between text-sm">
-                        <span class="text-slate-600">Setup Sistem:</span>
+                    <div class="flex justify-between">
+                        <span>Setup Sistem:</span>
                         <span class="font-bold text-emerald-600">Otomatis (Instant)</span>
                     </div>
                 </div>
-                <a href="http://lynk.id/ilmurahasia/pwp32kyp81oy/checkout" target="_blank" class="btn-gold w-full py-4 rounded-2xl text-xs font-black uppercase tracking-wider block text-center shadow-lg">
-                    AMANKAN LISENSI ANDA SEKARANG[cite: 1]
+
+                <a href="http://lynk.id/ilmurahasia/pwp32kyp81oy/checkout" target="_blank" class="btn-gold w-full py-4 rounded-2xl text-xs sm:text-sm font-black uppercase tracking-wider block text-center shadow-lg">
+                    AMANKAN PROMO 77RB SEKARANG[cite: 1]
                 </a>
             </div>
         </div>
