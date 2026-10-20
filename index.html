@@ -10,7 +10,7 @@
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col">
 
-    <!-- 1. HALAMAN FORM MASUK AWAL (NAMA, MEJA, & WA) -->
+    <!-- 1. HALAMAN FORM MASUK AWAL (NAMA, MEJA, & WA) + GEOLOKASI OTOMATIS -->
     <div id="sectionFormAwal" class="min-h-screen flex items-center justify-center p-6 bg-slate-900 relative">
         <div class="bg-white p-8 rounded-3xl w-full max-w-md shadow-2xl space-y-6">
             <div class="text-center">
@@ -110,12 +110,35 @@
 
         document.getElementById('titleWelcomeResto').innerText = `Katalog ${currentResto.replace(/_/g, ' ')}`;
 
-        let dataPemesan = { nama: "", meja: "", wa: "" };
+        let dataPemesan = { nama: "", meja: "", wa: "", lat: 0, lon: 0 };
         let menuData = [];
         let keranjang = {};
         let metodeBayarPilihan = "Transfer";
         let paymentInfoData = {};
-        let tokoWaKontak = "6285222952220";
+        let tokoWaKontak = "6285222952220"; // Dinamis dari setting pembayaran toko
+
+        // Pembersih nomor WA universal yang aman untuk HP dan PC
+        function formatNomorWA(nomor) {
+            if (!nomor) return '6285222952220';
+            let cleaned = String(nomor).replace(/\D/g, '');
+            if (cleaned.startsWith('0')) {
+                cleaned = '62' + cleaned.substring(1);
+            }
+            if (!cleaned.startsWith('62')) {
+                cleaned = '62' + cleaned;
+            }
+            return cleaned;
+        }
+
+        // Ambil Koordinat GPS Pelanggan secara Real-Time Saat Buka Halaman
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(position => {
+                dataPemesan.lat = position.coords.latitude;
+                dataPemesan.lon = position.coords.longitude;
+            }, (error) => {
+                console.log("GPS Notice Customer:", error.message);
+            }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
+        }
 
         function putarSuaraNotifikasi() {
             try {
@@ -136,7 +159,7 @@
             e.preventDefault();
             dataPemesan.nama = document.getElementById('inputNamaPemesan').value.trim();
             dataPemesan.meja = document.getElementById('inputNoMeja').value.trim();
-            dataPemesan.wa = document.getElementById('inputWaPemesan').value.trim();
+            dataPemesan.wa = formatNomorWA(document.getElementById('inputWaPemesan').value.trim());
 
             if(!dataPemesan.nama || !dataPemesan.meja || !dataPemesan.wa) {
                 alert("Nama, Nomor Meja, dan WhatsApp wajib diisi lengkap!");
@@ -150,6 +173,22 @@
             document.getElementById('infoPelangganHeader').innerText = `Pemesan: ${dataPemesan.nama} | Meja: ${dataPemesan.meja} | WA: ${dataPemesan.wa}`;
 
             muatDataKatalogDanPayment();
+            
+            // Kirim sinyal data konsumen awal & geolokasi ke backend
+            fetch(GAS_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'simpanDataKonsumen',
+                    resto: currentResto,
+                    nama_pemesan: dataPemesan.nama,
+                    nomor_wa: dataPemesan.wa,
+                    nomor_meja: dataPemesan.meja,
+                    latitude: dataPemesan.lat,
+                    longitude: dataPemesan.lon
+                })
+            }).catch(()=>{});
         });
 
         function muatDataKatalogDanPayment() {
@@ -164,6 +203,9 @@
             .then(res => res.json())
             .then(resData => {
                 paymentInfoData = resData.data || {};
+                if(paymentInfoData.norek) {
+                    tokoWaKontak = formatNomorWA(paymentInfoData.norek); // Ambil kontak WA dari setting payment jika tersedia
+                }
                 updatePaymentDetailBox();
             });
         }
@@ -308,7 +350,9 @@
                 detail_pesanan: detailPesananArr.join(', '),
                 total_harga: totalStr,
                 nomor_meja: dataPemesan.meja,
-                metode_bayar: metodeBayarPilihan
+                metode_bayar: metodeBayarPilihan,
+                latitude: dataPemesan.lat,
+                longitude: dataPemesan.lon
             };
 
             fetch(GAS_URL, {
@@ -323,7 +367,8 @@
                 if(metodeBayarPilihan === 'Transfer' || metodeBayarPilihan === 'QRIS') {
                     let pesanWa = `Halo Admin ${currentResto.replace(/_/g, ' ')}, saya ingin konfirmasi pembayaran pesanan.%0A%0A*Nama:* ${dataPemesan.nama}%0A*No Meja:* ${dataPemesan.meja}%0A*No WA:* ${dataPemesan.wa}%0A*Metode:* ${metodeBayarPilihan}%0A%0A*Daftar Pesanan:*%0A${encodeURIComponent(teksDetail)}%0A%0A*Total:* *${totalStr}*%0A%0A(Berikut saya lampirkan bukti transfer/pembayaran)`;
                     
-                    let urlWa = `https://wa.me/${tokoWaKontak}?text=${pesanWa}`;
+                    // Menggunakan format api.whatsapp.com yang 100% aman di HP & PC tanpa error kode negara
+                    let urlWa = `https://api.whatsapp.com/send?phone=${tokoWaKontak}&text=${pesanWa}`;
                     
                     if(confirm("Pesanan berhasil dikirim ke toko!\n\nKlik OK untuk langsung konfirmasi pembayaran & kirim bukti transfer ke WhatsApp Toko.")) {
                         window.open(urlWa, '_blank');
