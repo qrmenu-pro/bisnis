@@ -94,7 +94,7 @@
             </div>
 
             <button onclick="prosesKirimOrder()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl text-sm shadow-lg transition">
-                Selesaikan Pesanan Sekarang 🚀
+                Konfirmasi & Kirim Pesanan Sekarang 🚀
             </button>
         </div>
     </div>
@@ -106,11 +106,28 @@
 
         document.getElementById('titleWelcomeResto').innerText = `Katalog ${currentResto.replace(/_/g, ' ')}`;
 
-        let dataPemesan = { nama: "Tamu", meja: "", wa: "" };
+        let dataPemesan = { meja: "", wa: "" };
         let menuData = [];
         let keranjang = {};
         let metodeBayarPilihan = "Transfer";
         let paymentInfoData = {};
+        let tokoWaKontak = "6285222952220"; // Nomor WhatsApp default toko
+
+        // Fungsi Bunyi Notifikasi (Audio Beep)
+        function putarSuaraNotifikasi() {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); // Nada D5
+                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.3);
+            } catch(e) {}
+        }
 
         document.getElementById('formAwalOrder').addEventListener('submit', function(e) {
             e.preventDefault();
@@ -158,15 +175,12 @@
                 let badge = item.kategori === 'Minuman' ? 'bg-blue-100 text-blue-800' : 'bg-rose-100 text-rose-800';
                 let qty = keranjang[item.id_menu] || 0;
 
-                // Konversi URL Google Drive agar gambar tampil sempurna
                 let rawImg = item.gambar_url ? item.gambar_url.trim() : "";
                 let imgSrc = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c';
                 if (rawImg.startsWith('http')) {
                     if (rawImg.includes('drive.google.com') && rawImg.includes('id=')) {
                         let fileId = rawImg.split('id=')[1].split('&')[0];
                         imgSrc = `https://lh3.googleusercontent.com/d/${fileId}`;
-                    } else if (rawImg.includes('googleusercontent.com/d/')) {
-                        imgSrc = rawImg;
                     } else {
                         imgSrc = rawImg;
                     }
@@ -268,7 +282,6 @@
         }
 
         function prosesKirimOrder() {
-            // Susun detail pesanan teks
             let detailPesananArr = [];
             let grandTotalNum = 0;
             menuData.forEach(item => {
@@ -276,9 +289,12 @@
                 if(qty > 0) {
                     let subtotal = qty * parseInt(item.harga_jual);
                     grandTotalNum += subtotal;
-                    detailPesananArr.push(`${item.nama_menu} (${qty}x)`);
+                    detailPesananArr.push(`- ${item.nama_menu} (${qty}x) = Rp ${subtotal.toLocaleString()}`);
                 }
             });
+
+            let teksDetail = detailPesananArr.join('\n');
+            let totalStr = `Rp ${grandTotalNum.toLocaleString()}`;
 
             let payloadOrder = {
                 action: 'simpanOrderMasuk',
@@ -286,20 +302,34 @@
                 nama_pemesan: `Tamu (${dataPemesan.wa})`,
                 nomor_wa: dataPemesan.wa,
                 detail_pesanan: detailPesananArr.join(', '),
-                total_harga: `Rp ${grandTotalNum.toLocaleString()}`,
+                total_harga: totalStr,
                 nomor_meja: dataPemesan.meja,
                 metode_bayar: metodeBayarPilihan
             };
 
-            // Kirim ke Database GAS agar masuk ke tombol hijau Admin Klien
+            // Kirim ke database GAS agar langsung masuk panel hijau Admin Klien
             fetch(GAS_URL, {
                 method: 'POST',
                 mode: 'no-cors',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payloadOrder)
             }).then(() => {
-                alert(`Pesanan Berhasil Dikirim ke Toko!\nMeja: ${dataPemesan.meja}\nTotal: Rp ${grandTotalNum.toLocaleString()}\nMetode Bayar: ${metodeBayarPilihan}\n\nSilakan menunggu, pesanan Anda sedang disiapkan.`);
+                // Bunyikan Suara Notifikasi Beep
+                putarSuaraNotifikasi();
                 tutupModalCheckout();
+
+                if(metodeBayarPilihan === 'Transfer' || metodeBayarPilihan === 'QRIS') {
+                    let pesanWa = `Halo Admin ${currentResto.replace(/_/g, ' ')}, saya ingin konfirmasi pembayaran pesanan.%0A%0A*No Meja:* ${dataPemesan.meja}%0A*No WA:* ${dataPemesan.wa}%0A*Metode:* ${metodeBayarPilihan}%0A%0A*Daftar Pesanan:*%0A${encodeURIComponent(teksDetail)}%0A%0A*Total:* *${totalStr}*%0A%0A(Berikut saya lampirkan bukti transfer/pembayaran)`;
+                    
+                    let urlWa = `https://wa.me/${tokoWaKontak}?text=${pesanWa}`;
+                    
+                    if(confirm("Pesanan berhasil dikirim ke toko!\n\nKlik OK untuk langsung konfirmasi pembayaran & kirim bukti transfer ke WhatsApp Toko.")) {
+                        window.open(urlWa, '_blank');
+                    }
+                } else {
+                    alert(`Pesanan Berhasil Dikirim!\nMeja: ${dataPemesan.meja}\nTotal: ${totalStr}\nMetode: Cash di Kasir.\n\nSilakan menunggu pesanan di meja Anda.`);
+                }
+
                 keranjang = {};
                 renderKatalog();
                 hitungTotalHarga();
