@@ -10,18 +10,22 @@
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col">
 
-    <!-- 1. HALAMAN FORM MASUK AWAL (MEJA & WA) -->
+    <!-- 1. HALAMAN FORM MASUK AWAL (NAMA, MEJA, & WA) -->
     <div id="sectionFormAwal" class="min-h-screen flex items-center justify-center p-6 bg-slate-900 relative">
         <div class="bg-white p-8 rounded-3xl w-full max-w-md shadow-2xl space-y-6">
             <div class="text-center">
                 <div class="h-16 w-16 bg-amber-600 text-white rounded-2xl mx-auto flex items-center justify-center font-bold text-xl shadow-lg mb-3">QR</div>
                 <h2 id="titleWelcomeResto" class="text-xl font-extrabold text-slate-900">Selamat Datang</h2>
-                <p class="text-xs text-slate-500 mt-1">Silakan masukkan Nomor Meja & WhatsApp untuk mulai memesan</p>
+                <p class="text-xs text-slate-500 mt-1">Silakan lengkapi data diri Anda untuk mulai memesan</p>
             </div>
 
             <form id="formAwalOrder" class="space-y-4 text-xs">
                 <div>
-                    <label class="block font-semibold mb-1 uppercase tracking-wider text-slate-600">Nomor Meja</label>
+                    <label class="block font-semibold mb-1 uppercase tracking-wider text-slate-600">Nama Pemesan</label>
+                    <input type="text" id="inputNamaPemesan" required placeholder="Cth: Budi Santoso" class="w-full p-3.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:border-amber-600 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block font-semibold mb-1 uppercase tracking-wider text-slate-600">Nomor Meja / Alamat</label>
                     <input type="text" id="inputNoMeja" required placeholder="Cth: Meja 05 / Takeaway" class="w-full p-3.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:border-amber-600 focus:outline-none">
                 </div>
                 <div>
@@ -40,7 +44,7 @@
         <header class="bg-gradient-to-r from-amber-700 to-amber-600 text-white shadow-md sticky top-0 z-40 px-6 py-4 flex justify-between items-center">
             <div>
                 <h1 id="namaTokoTitle" class="text-lg font-extrabold tracking-tight">🍽️ Katalog Menu</h1>
-                <p id="infoPelangganHeader" class="text-[11px] text-amber-100 opacity-90">Meja: - | WA: -</p>
+                <p id="infoPelangganHeader" class="text-[11px] text-amber-100 opacity-90">Pemesan: - | Meja: - | WA: -</p>
             </div>
             <div class="text-xs bg-white/20 text-white px-3.5 py-1.5 rounded-full font-bold backdrop-blur-sm border border-white/30">
                 🟢 Live Order
@@ -106,21 +110,20 @@
 
         document.getElementById('titleWelcomeResto').innerText = `Katalog ${currentResto.replace(/_/g, ' ')}`;
 
-        let dataPemesan = { meja: "", wa: "" };
+        let dataPemesan = { nama: "", meja: "", wa: "" };
         let menuData = [];
         let keranjang = {};
         let metodeBayarPilihan = "Transfer";
         let paymentInfoData = {};
-        let tokoWaKontak = "6285222952220"; // Nomor WhatsApp default toko
+        let tokoWaKontak = "6285222952220";
 
-        // Fungsi Bunyi Notifikasi (Audio Beep)
         function putarSuaraNotifikasi() {
             try {
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 const osc = audioCtx.createOscillator();
                 const gain = audioCtx.createGain();
                 osc.type = 'sine';
-                osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); // Nada D5
+                osc.frequency.setValueAtTime(587.33, audioCtx.currentTime);
                 gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
                 osc.connect(gain);
                 gain.connect(audioCtx.destination);
@@ -131,11 +134,12 @@
 
         document.getElementById('formAwalOrder').addEventListener('submit', function(e) {
             e.preventDefault();
+            dataPemesan.nama = document.getElementById('inputNamaPemesan').value.trim();
             dataPemesan.meja = document.getElementById('inputNoMeja').value.trim();
             dataPemesan.wa = document.getElementById('inputWaPemesan').value.trim();
 
-            if(!dataPemesan.meja || !dataPemesan.wa) {
-                alert("Nomor Meja dan WhatsApp wajib diisi!");
+            if(!dataPemesan.nama || !dataPemesan.meja || !dataPemesan.wa) {
+                alert("Nama, Nomor Meja, dan WhatsApp wajib diisi lengkap!");
                 return;
             }
 
@@ -143,7 +147,7 @@
             document.getElementById('sectionKatalogMenu').classList.remove('hidden');
 
             document.getElementById('namaTokoTitle').innerText = `🍽️ ${currentResto.replace(/_/g, ' ')}`;
-            document.getElementById('infoPelangganHeader').innerText = `Meja: ${dataPemesan.meja} | WA: ${dataPemesan.wa}`;
+            document.getElementById('infoPelangganHeader').innerText = `Pemesan: ${dataPemesan.nama} | Meja: ${dataPemesan.meja} | WA: ${dataPemesan.wa}`;
 
             muatDataKatalogDanPayment();
         });
@@ -299,7 +303,7 @@
             let payloadOrder = {
                 action: 'simpanOrderMasuk',
                 resto: currentResto,
-                nama_pemesan: `Tamu (${dataPemesan.wa})`,
+                nama_pemesan: `${dataPemesan.nama} (${dataPemesan.wa})`,
                 nomor_wa: dataPemesan.wa,
                 detail_pesanan: detailPesananArr.join(', '),
                 total_harga: totalStr,
@@ -307,19 +311,17 @@
                 metode_bayar: metodeBayarPilihan
             };
 
-            // Kirim ke database GAS agar langsung masuk panel hijau Admin Klien
             fetch(GAS_URL, {
                 method: 'POST',
                 mode: 'no-cors',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payloadOrder)
             }).then(() => {
-                // Bunyikan Suara Notifikasi Beep
                 putarSuaraNotifikasi();
                 tutupModalCheckout();
 
                 if(metodeBayarPilihan === 'Transfer' || metodeBayarPilihan === 'QRIS') {
-                    let pesanWa = `Halo Admin ${currentResto.replace(/_/g, ' ')}, saya ingin konfirmasi pembayaran pesanan.%0A%0A*No Meja:* ${dataPemesan.meja}%0A*No WA:* ${dataPemesan.wa}%0A*Metode:* ${metodeBayarPilihan}%0A%0A*Daftar Pesanan:*%0A${encodeURIComponent(teksDetail)}%0A%0A*Total:* *${totalStr}*%0A%0A(Berikut saya lampirkan bukti transfer/pembayaran)`;
+                    let pesanWa = `Halo Admin ${currentResto.replace(/_/g, ' ')}, saya ingin konfirmasi pembayaran pesanan.%0A%0A*Nama:* ${dataPemesan.nama}%0A*No Meja:* ${dataPemesan.meja}%0A*No WA:* ${dataPemesan.wa}%0A*Metode:* ${metodeBayarPilihan}%0A%0A*Daftar Pesanan:*%0A${encodeURIComponent(teksDetail)}%0A%0A*Total:* *${totalStr}*%0A%0A(Berikut saya lampirkan bukti transfer/pembayaran)`;
                     
                     let urlWa = `https://wa.me/${tokoWaKontak}?text=${pesanWa}`;
                     
@@ -327,7 +329,7 @@
                         window.open(urlWa, '_blank');
                     }
                 } else {
-                    alert(`Pesanan Berhasil Dikirim!\nMeja: ${dataPemesan.meja}\nTotal: ${totalStr}\nMetode: Cash di Kasir.\n\nSilakan menunggu pesanan di meja Anda.`);
+                    alert(`Pesanan Berhasil Dikirim!\nNama: ${dataPemesan.nama}\nMeja: ${dataPemesan.meja}\nTotal: ${totalStr}\nMetode: Cash di Kasir.\n\nSilakan menunggu pesanan di meja Anda.`);
                 }
 
                 keranjang = {};
