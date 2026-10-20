@@ -179,11 +179,22 @@
             menuData.forEach(item => {
                 let badge = item.kategori === 'Minuman' ? 'bg-blue-100 text-blue-800' : 'bg-rose-100 text-rose-800';
                 let qty = keranjang[item.id_menu] || 0;
-                let imgSrc = item.gambar_url && item.gambar_url.startsWith('http') ? item.gambar_url : 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c';
+
+                // Penanganan URL Gambar Google Drive / Unsplash yang Aman
+                let rawImg = item.gambar_url ? item.gambar_url.trim() : "";
+                let imgSrc = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c';
+                if (rawImg.startsWith('http')) {
+                    if (rawImg.includes('drive.google.com') && rawImg.includes('id=')) {
+                        let fileId = rawImg.split('id=')[1].split('&')[0];
+                        imgSrc = `https://lh3.googleusercontent.com/d/${fileId}`;
+                    } else {
+                        imgSrc = rawImg;
+                    }
+                }
 
                 grid.innerHTML += `
                     <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex gap-4 items-center">
-                        <img src="${imgSrc}" class="w-24 h-24 object-cover rounded-xl shadow-sm flex-shrink-0" alt="Menu">
+                        <img src="${imgSrc}" class="w-24 h-24 object-cover rounded-xl shadow-sm flex-shrink-0 bg-slate-100" alt="Menu" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c'">
                         <div class="flex-1 min-w-0">
                             <span class="text-[10px] font-bold px-2 py-0.5 rounded ${badge}">${item.kategori}</span>
                             <h3 class="font-bold text-sm text-slate-900 mt-1 truncate">${item.nama_menu}</h3>
@@ -263,7 +274,13 @@
             } else if(metodeBayarPilihan === 'QRIS') {
                 infoText.innerHTML = `Scan barcode QRIS di bawah ini melalui aplikasi e-wallet / mobile banking Anda.`;
                 if(paymentInfoData.qris_url) {
-                    qrisContainer.innerHTML = `<img src="${paymentInfoData.qris_url}" class="w-32 h-32 object-contain mx-auto rounded-xl border bg-white p-1 mt-2">`;
+                    let rawQris = paymentInfoData.qris_url.trim();
+                    let qrisSrc = rawQris;
+                    if(rawQris.includes('drive.google.com') && rawQris.includes('id=')) {
+                        let fileId = rawQris.split('id=')[1].split('&')[0];
+                        qrisSrc = `https://lh3.googleusercontent.com/d/${fileId}`;
+                    }
+                    qrisContainer.innerHTML = `<img src="${qrisSrc}" class="w-32 h-32 object-contain mx-auto rounded-xl border bg-white p-1 mt-2">`;
                 } else {
                     qrisContainer.innerHTML = `<p class="text-rose-500 font-semibold mt-2">Barcode QRIS belum di-upload oleh toko.</p>`;
                 }
