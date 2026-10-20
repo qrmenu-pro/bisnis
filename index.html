@@ -35,9 +35,8 @@
         </div>
     </div>
 
-    <!-- 2. HALAMAN UTAMA KATALOG MENU (MUNCUL SETELAH SUBMIT FORM) -->
+    <!-- 2. HALAMAN UTAMA KATALOG MENU -->
     <div id="sectionKatalogMenu" class="hidden min-h-screen flex flex-col pb-24">
-        <!-- HEADER ELEGAN & DINAMIS -->
         <header class="bg-gradient-to-r from-amber-700 to-amber-600 text-white shadow-md sticky top-0 z-40 px-6 py-4 flex justify-between items-center">
             <div>
                 <h1 id="namaTokoTitle" class="text-lg font-extrabold tracking-tight">🍽️ Katalog Menu</h1>
@@ -48,7 +47,6 @@
             </div>
         </header>
 
-        <!-- MAIN KONTEN LIST MENU -->
         <main class="max-w-2xl mx-auto px-4 py-6 flex-1 w-full space-y-4">
             <div class="mb-2">
                 <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500">Daftar Menu Tersedia</h2>
@@ -59,7 +57,6 @@
             </div>
         </main>
 
-        <!-- FLOATING BAR: TOTAL HARGA & TOMBOL ORDER SEKARANG -->
         <div class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200 px-6 py-4 z-50 shadow-lg">
             <div class="max-w-2xl mx-auto flex justify-between items-center">
                 <div>
@@ -73,7 +70,7 @@
         </div>
     </div>
 
-    <!-- 3. MODAL PILIH PEMBAYARAN & KONFIRMASI -->
+    <!-- 3. MODAL PEMBAYARAN & KONFIRMASI -->
     <div id="modalCheckout" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center border-b pb-3">
@@ -81,7 +78,6 @@
                 <button onclick="tutupModalCheckout()" class="text-slate-400 hover:text-slate-700 font-bold text-lg">✕</button>
             </div>
 
-            <!-- Pilihan Metode Pembayaran -->
             <div class="space-y-3 text-xs">
                 <label class="block font-semibold text-slate-700">Metode Pembayaran ke Toko</label>
                 <div class="grid grid-cols-3 gap-2">
@@ -91,7 +87,6 @@
                 </div>
             </div>
 
-            <!-- Detail Info Pembayaran Toko -->
             <div id="detailPaymentBox" class="p-4 bg-slate-50 rounded-2xl border space-y-2 text-xs text-slate-700">
                 <p class="font-bold">Informasi Rekening Toko:</p>
                 <p id="infoBankText">Memuat informasi pembayaran...</p>
@@ -111,13 +106,12 @@
 
         document.getElementById('titleWelcomeResto').innerText = `Katalog ${currentResto.replace(/_/g, ' ')}`;
 
-        let dataPemesan = { meja: "", wa: "" };
+        let dataPemesan = { nama: "Tamu", meja: "", wa: "" };
         let menuData = [];
         let keranjang = {};
         let metodeBayarPilihan = "Transfer";
         let paymentInfoData = {};
 
-        // Tangkap Submit Form Awal (Meja & WA)
         document.getElementById('formAwalOrder').addEventListener('submit', function(e) {
             e.preventDefault();
             dataPemesan.meja = document.getElementById('inputNoMeja').value.trim();
@@ -128,20 +122,6 @@
                 return;
             }
 
-            // Kirim data awal ke database report klien secara otomatis
-            fetch(GAS_URL, {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    action: 'simpanDataKonsumen',
-                    resto: currentResto,
-                    nomor_wa: dataPemesan.wa,
-                    nomor_meja: dataPemesan.meja
-                })
-            }).catch(() => {});
-
-            // Ubah Tampilan: Sembunyikan Form, Tampilkan Katalog Menu Mewah & Elegan
             document.getElementById('sectionFormAwal').classList.add('hidden');
             document.getElementById('sectionKatalogMenu').classList.remove('hidden');
 
@@ -152,7 +132,6 @@
         });
 
         function muatDataKatalogDanPayment() {
-            // Ambil Menu
             fetch(`${GAS_URL}?action=getMenu&resto=${encodeURIComponent(currentResto)}`)
             .then(res => res.json())
             .then(resData => {
@@ -160,7 +139,6 @@
                 renderKatalog();
             });
 
-            // Ambil Payment
             fetch(`${GAS_URL}?action=getSettingPayment&resto=${encodeURIComponent(currentResto)}`)
             .then(res => res.json())
             .then(resData => {
@@ -180,13 +158,15 @@
                 let badge = item.kategori === 'Minuman' ? 'bg-blue-100 text-blue-800' : 'bg-rose-100 text-rose-800';
                 let qty = keranjang[item.id_menu] || 0;
 
-                // Penanganan URL Gambar Google Drive / Unsplash yang Aman
+                // Konversi URL Google Drive agar gambar tampil sempurna
                 let rawImg = item.gambar_url ? item.gambar_url.trim() : "";
                 let imgSrc = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c';
                 if (rawImg.startsWith('http')) {
                     if (rawImg.includes('drive.google.com') && rawImg.includes('id=')) {
                         let fileId = rawImg.split('id=')[1].split('&')[0];
                         imgSrc = `https://lh3.googleusercontent.com/d/${fileId}`;
+                    } else if (rawImg.includes('googleusercontent.com/d/')) {
+                        imgSrc = rawImg;
                     } else {
                         imgSrc = rawImg;
                     }
@@ -288,11 +268,44 @@
         }
 
         function prosesKirimOrder() {
-            alert(`Pesanan Berhasil Dikirim!\nMeja: ${dataPemesan.meja} | WA: ${dataPemesan.wa}\nMetode Bayar: ${metodeBayarPilihan}\nTerima kasih!`);
-            tutupModalCheckout();
-            keranjang = {};
-            renderKatalog();
-            hitungTotalHarga();
+            // Susun detail pesanan teks
+            let detailPesananArr = [];
+            let grandTotalNum = 0;
+            menuData.forEach(item => {
+                let qty = keranjang[item.id_menu] || 0;
+                if(qty > 0) {
+                    let subtotal = qty * parseInt(item.harga_jual);
+                    grandTotalNum += subtotal;
+                    detailPesananArr.push(`${item.nama_menu} (${qty}x)`);
+                }
+            });
+
+            let payloadOrder = {
+                action: 'simpanOrderMasuk',
+                resto: currentResto,
+                nama_pemesan: `Tamu (${dataPemesan.wa})`,
+                nomor_wa: dataPemesan.wa,
+                detail_pesanan: detailPesananArr.join(', '),
+                total_harga: `Rp ${grandTotalNum.toLocaleString()}`,
+                nomor_meja: dataPemesan.meja,
+                metode_bayar: metodeBayarPilihan
+            };
+
+            // Kirim ke Database GAS agar masuk ke tombol hijau Admin Klien
+            fetch(GAS_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payloadOrder)
+            }).then(() => {
+                alert(`Pesanan Berhasil Dikirim ke Toko!\nMeja: ${dataPemesan.meja}\nTotal: Rp ${grandTotalNum.toLocaleString()}\nMetode Bayar: ${metodeBayarPilihan}\n\nSilakan menunggu, pesanan Anda sedang disiapkan.`);
+                tutupModalCheckout();
+                keranjang = {};
+                renderKatalog();
+                hitungTotalHarga();
+            }).catch(() => {
+                alert("Gagal mengirim pesanan. Periksa koneksi internet Anda.");
+            });
         }
     </script>
 </body>
