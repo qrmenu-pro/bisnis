@@ -11,7 +11,7 @@
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col">
 
     <!-- 1. HALAMAN FORM MASUK AWAL (NAMA, MEJA, & WA) + GEOLOKASI OTOMATIS -->
-    <div id="sectionFormAwal" class="min-h-screen flex items-center justify-center p-6 bg-slate-900 relative">
+    <div id="sectionFormAwal" class="hidden min-h-screen flex items-center justify-center p-6 bg-slate-900 relative">
         <div class="bg-white p-8 rounded-3xl w-full max-w-md shadow-2xl space-y-6">
             <div class="text-center">
                 <div class="h-16 w-16 bg-amber-600 text-white rounded-2xl mx-auto flex items-center justify-center font-bold text-xl shadow-lg mb-3">QR</div>
@@ -46,12 +46,24 @@
                 <h1 id="namaTokoTitle" class="text-lg font-extrabold tracking-tight">🍽️ Katalog Menu</h1>
                 <p id="infoPelangganHeader" class="text-[11px] text-amber-100 opacity-90">Pemesan: - | Meja: - | WA: -</p>
             </div>
-            <div class="text-xs bg-white/20 text-white px-3.5 py-1.5 rounded-full font-bold backdrop-blur-sm border border-white/30">
-                🟢 Live Order
+            <div class="flex items-center gap-2">
+                <button onclick="logoutSesi()" class="text-[10px] bg-white/20 hover:bg-white/30 text-white px-2.5 py-1 rounded-lg font-bold transition">Ganti Akun</button>
+                <div class="text-xs bg-white/20 text-white px-3.5 py-1.5 rounded-full font-bold backdrop-blur-sm border border-white/30">
+                    🟢 Live Order
+                </div>
             </div>
         </header>
 
         <main class="max-w-2xl mx-auto px-4 py-6 flex-1 w-full space-y-4">
+            <!-- Kotak Riwayat Pesanan Berbasis Cache -->
+            <div id="boxRiwayatCache" class="hidden bg-amber-50 border border-amber-200 p-4 rounded-2xl space-y-2">
+                <div class="flex justify-between items-center">
+                    <h3 class="font-bold text-amber-900 text-xs">📋 Riwayat Pesanan Terakhir Anda</h3>
+                    <span id="waktuRiwayat" class="text-[10px] text-amber-700"></span>
+                </div>
+                <p id="teksRiwayatDetail" class="text-xs text-amber-800"></p>
+            </div>
+
             <div class="mb-2">
                 <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500">Daftar Menu Tersedia</h2>
             </div>
@@ -117,6 +129,27 @@
         let paymentInfoData = {};
         let tokoWaKontak = "6285222952220"; // Dinamis dari setting pembayaran toko
 
+        // Cek LocalStorage Cache saat halaman dimuat (Supaya langsung terbuka selamanya)
+        const savedSession = localStorage.getItem(`qrmenu_session_${currentResto}`);
+        const savedCart = localStorage.getItem(`qrmenu_cart_${currentResto}`);
+        const savedHistory = localStorage.getItem(`qrmenu_history_${currentResto}`);
+
+        if (savedSession) {
+            dataPemesan = JSON.parse(savedSession);
+            if (savedCart) keranjang = JSON.parse(savedCart);
+
+            document.getElementById('sectionFormAwal').classList.add('hidden');
+            document.getElementById('sectionKatalogMenu').classList.remove('hidden');
+            document.getElementById('namaTokoTitle').innerText = `🍽️ ${currentResto.replace(/_/g, ' ')}`;
+            document.getElementById('infoPelangganHeader').innerText = `Pemesan: ${dataPemesan.nama} | Meja: ${dataPemesan.meja} | WA: ${dataPemesan.wa}`;
+
+            muatDataKatalogDanPayment();
+            cekTampilkanRiwayatCache(savedHistory);
+        } else {
+            document.getElementById('sectionFormAwal').classList.remove('hidden');
+            document.getElementById('sectionKatalogMenu').classList.add('hidden');
+        }
+
         // Pembersih nomor WA universal yang aman untuk HP dan PC
         function formatNomorWA(nomor) {
             if (!nomor) return '6285222952220';
@@ -166,6 +199,9 @@
                 return;
             }
 
+            // Simpan sesi ke cache agar terbuka otomatis selamanya
+            localStorage.setItem(`qrmenu_session_${currentResto}`, JSON.stringify(dataPemesan));
+
             document.getElementById('sectionFormAwal').classList.add('hidden');
             document.getElementById('sectionKatalogMenu').classList.remove('hidden');
 
@@ -197,6 +233,7 @@
             .then(resData => {
                 menuData = resData.data || [];
                 renderKatalog();
+                hitungTotalHarga();
             });
 
             fetch(`${GAS_URL}?action=getSettingPayment&resto=${encodeURIComponent(currentResto)}`)
@@ -204,7 +241,7 @@
             .then(resData => {
                 paymentInfoData = resData.data || {};
                 if(paymentInfoData.norek) {
-                    tokoWaKontak = formatNomorWA(paymentInfoData.norek); // Ambil kontak WA dari setting payment jika tersedia
+                    tokoWaKontak = formatNomorWA(paymentInfoData.norek); // Ambil kontak WA dari setting pembayaran toko jika tersedia
                 }
                 updatePaymentDetailBox();
             });
@@ -260,6 +297,9 @@
 
             document.getElementById(`qty_${id}`).innerText = keranjang[id];
             hitungTotalHarga();
+
+            // Simpan otomatis ke cache keranjang
+            localStorage.setItem(`qrmenu_cart_${currentResto}`, JSON.stringify(keranjang));
         }
 
         function hitungTotalHarga() {
@@ -364,6 +404,16 @@
                 putarSuaraNotifikasi();
                 tutupModalCheckout();
 
+                // Simpan riwayat pesanan ke cache localStorage
+                let historyData = {
+                    waktu: new Date().toLocaleTimeString() + " - " + new Date().toLocaleDateString(),
+                    detail: detailPesananArr.join(', '),
+                    total: totalStr,
+                    metode: metodeBayarPilihan
+                };
+                localStorage.setItem(`qrmenu_history_${currentResto}`, JSON.stringify(historyData));
+                tampilkanRiwayatCache(historyData);
+
                 if(metodeBayarPilihan === 'Transfer' || metodeBayarPilihan === 'QRIS') {
                     let pesanWa = `Halo Admin ${currentResto.replace(/_/g, ' ')}, saya ingin konfirmasi pembayaran pesanan.%0A%0A*Nama:* ${dataPemesan.nama}%0A*No Meja:* ${dataPemesan.meja}%0A*No WA:* ${dataPemesan.wa}%0A*Metode:* ${metodeBayarPilihan}%0A%0A*Daftar Pesanan:*%0A${encodeURIComponent(teksDetail)}%0A%0A*Total:* *${totalStr}*%0A%0A(Berikut saya lampirkan bukti transfer/pembayaran)`;
                     
@@ -378,11 +428,42 @@
                 }
 
                 keranjang = {};
+                localStorage.removeItem(`qrmenu_cart_${currentResto}`);
                 renderKatalog();
                 hitungTotalHarga();
             }).catch(() => {
                 alert("Gagal mengirim pesanan. Periksa koneksi internet Anda.");
             });
+        }
+
+        function tampilkanRiwayatCache(data) {
+            const box = document.getElementById('boxRiwayatCache');
+            const teks = document.getElementById('teksRiwayatDetail');
+            const waktu = document.getElementById('waktuRiwayat');
+
+            if(box && teks && waktu) {
+                box.classList.remove('hidden');
+                waktu.innerText = data.waktu;
+                teks.innerHTML = `<b>Pesanan:</b> ${data.detail}<br><b>Total:</b> ${data.total} (${data.metode})`;
+            }
+        }
+
+        function cekTampilkanRiwayatCache(savedHistoryStr) {
+            if (savedHistoryStr) {
+                try {
+                    let data = JSON.parse(savedHistoryStr);
+                    tampilkanRiwayatCache(data);
+                } catch(e) {}
+            }
+        }
+
+        function logoutSesi() {
+            if(confirm("Apakah Anda ingin mengganti akun / data diri pemesan?")) {
+                localStorage.removeItem(`qrmenu_session_${currentResto}`);
+                localStorage.removeItem(`qrmenu_cart_${currentResto}`);
+                localStorage.removeItem(`qrmenu_history_${currentResto}`);
+                location.reload();
+            }
         }
     </script>
 </body>
