@@ -117,6 +117,8 @@
 
     <script>
         const GAS_URL = "https://script.google.com/macros/s/AKfycbxi7tce2iHuEPgYggs2ECsjgMJUWyA071G-tDUeNKuiw14lcdE-H9n2BdMLf68PPaHQ/exec";
+        const API_KEY = "QRMenuProSecret2026Bandung"; // Kunci rahasia pengaman API GAS
+        
         const urlParams = new URLSearchParams(window.location.search);
         const currentResto = urlParams.get('resto') || "Cafe_Rokstars";
 
@@ -159,7 +161,6 @@
                     if (typeof callbackSuccess === 'function') callbackSuccess();
                 }, (error) => {
                     console.log("GPS High Accuracy Error:", error.message);
-                    // Fallback jika mode high accuracy gagal, coba posisi standar
                     navigator.geolocation.getCurrentPosition(posFallback => {
                         dataPemesan.lat = posFallback.coords.latitude;
                         dataPemesan.lon = posFallback.coords.longitude;
@@ -190,6 +191,7 @@
                 mode: 'no-cors',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
+                    key: API_KEY,
                     action: 'simpanDataKonsumen',
                     resto: currentResto,
                     nama_pemesan: dataPemesan.nama || "Tamu",
@@ -239,7 +241,6 @@
                 return;
             }
 
-            // Ambil ulang posisi GPS akurasi tinggi saat submit form login awal
             ambilLokasiAkurat(() => {
                 localStorage.setItem(`qrmenu_session_${currentResto}`, JSON.stringify(dataPemesan));
 
@@ -255,7 +256,7 @@
         });
 
         function muatDataKatalogDanPayment() {
-            fetch(`${GAS_URL}?action=getMenu&resto=${encodeURIComponent(currentResto)}`)
+            fetch(`${GAS_URL}?key=${API_KEY}&action=getMenu&resto=${encodeURIComponent(currentResto)}`)
             .then(res => res.json())
             .then(resData => {
                 menuData = resData.data || [];
@@ -263,7 +264,7 @@
                 hitungTotalHarga();
             });
 
-            fetch(`${GAS_URL}?action=getSettingPayment&resto=${encodeURIComponent(currentResto)}`)
+            fetch(`${GAS_URL}?key=${API_KEY}&action=getSettingPayment&resto=${encodeURIComponent(currentResto)}`)
             .then(res => res.json())
             .then(resData => {
                 paymentInfoData = resData.data || {};
@@ -393,7 +394,6 @@
         }
 
         function prosesKirimOrder() {
-            // Pastikan posisi GPS diperbarui dengan akurasi tinggi sesaat sebelum checkout dikirim
             ambilLokasiAkurat(() => {
                 let detailPesananArr = [];
                 let grandTotalNum = 0;
@@ -410,6 +410,7 @@
                 let totalStr = `Rp ${grandTotalNum.toLocaleString()}`;
 
                 let payloadOrder = {
+                    key: API_KEY,
                     action: 'simpanOrderMasuk',
                     resto: currentResto,
                     nama_pemesan: `${dataPemesan.nama} (${dataPemesan.wa})`,
