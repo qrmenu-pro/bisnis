@@ -117,7 +117,7 @@
 
     <script>
         const GAS_URL = "https://script.google.com/macros/s/AKfycbxi7tce2iHuEPgYggs2ECsjgMJUWyA071G-tDUeNKuiw14lcdE-H9n2BdMLf68PPaHQ/exec";
-        const API_KEY = "QRMenuProSecret2026Bandung"; // Kunci rahasia pengaman API GAS
+        const API_KEY = "QRMenuProSecret2026Bandung";
         
         const urlParams = new URLSearchParams(window.location.search);
         const currentResto = urlParams.get('resto') || "Cafe_Rokstars";
@@ -131,7 +131,6 @@
         let paymentInfoData = {};
         let tokoWaKontak = "6285222952220";
 
-        // Cek LocalStorage Cache saat halaman dimuat
         const savedSession = localStorage.getItem(`qrmenu_session_${currentResto}`);
         const savedCart = localStorage.getItem(`qrmenu_cart_${currentResto}`);
         const savedHistory = localStorage.getItem(`qrmenu_history_${currentResto}`);
@@ -152,7 +151,6 @@
             document.getElementById('sectionKatalogMenu').classList.add('hidden');
         }
 
-        // Fungsi Pembaruan Geolokasi Akurasi Tinggi (High Accuracy & Real-time Refresh)
         function ambilLokasiAkurat(callbackSuccess) {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(position => {
@@ -160,7 +158,6 @@
                     dataPemesan.lon = position.coords.longitude;
                     if (typeof callbackSuccess === 'function') callbackSuccess();
                 }, (error) => {
-                    console.log("GPS High Accuracy Error:", error.message);
                     navigator.geolocation.getCurrentPosition(posFallback => {
                         dataPemesan.lat = posFallback.coords.latitude;
                         dataPemesan.lon = posFallback.coords.longitude;
@@ -168,17 +165,12 @@
                     }, () => {
                         if (typeof callbackSuccess === 'function') callbackSuccess();
                     }, { enableHighAccuracy: false, timeout: 15000 });
-                }, { 
-                    enableHighAccuracy: true, 
-                    timeout: 20000, 
-                    maximumAge: 0 
-                });
+                }, { enableHighAccuracy: true, timeout: 20000, maximumAge: 0 });
             } else {
                 if (typeof callbackSuccess === 'function') callbackSuccess();
             }
         }
 
-        // Jalankan pelacakan koordinat GPS berakurasi tinggi secara otomatis saat halaman dibuka/refresh
         ambilLokasiAkurat(() => {
             if (savedSession && dataPemesan.lat !== 0) {
                 kirimSinyalLokasiKeBackend();
@@ -259,7 +251,9 @@
             fetch(`${GAS_URL}?key=${API_KEY}&action=getMenu&resto=${encodeURIComponent(currentResto)}`)
             .then(res => res.json())
             .then(resData => {
-                menuData = resData.data || [];
+                // Filter ketat: pastikan hanya produk berawalan PRD- yang masuk ke katalog pembeli
+                let rawData = resData.data || [];
+                menuData = rawData.filter(item => item.id_menu && String(item.id_menu).indexOf('PRD-') === 0);
                 renderKatalog();
                 hitungTotalHarga();
             });
@@ -285,6 +279,7 @@
             menuData.forEach(item => {
                 let badge = item.kategori === 'Minuman' ? 'bg-blue-100 text-blue-800' : 'bg-rose-100 text-rose-800';
                 let qty = keranjang[item.id_menu] || 0;
+                let hargaJualNum = parseInt(item.harga_jual) || 0;
 
                 let rawImg = item.gambar_url ? item.gambar_url.trim() : "";
                 let imgSrc = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c';
@@ -301,11 +296,11 @@
                     <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex gap-4 items-center">
                         <img src="${imgSrc}" class="w-24 h-24 object-cover rounded-xl shadow-sm flex-shrink-0 bg-slate-100" alt="Menu" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c'">
                         <div class="flex-1 min-w-0">
-                            <span class="text-[10px] font-bold px-2 py-0.5 rounded ${badge}">${item.kategori}</span>
+                            <span class="text-[10px] font-bold px-2 py-0.5 rounded ${badge}">${item.kategori || 'Makanan'}</span>
                             <h3 class="font-bold text-sm text-slate-900 mt-1 truncate">${item.nama_menu}</h3>
-                            <p class="text-xs text-slate-500 line-clamp-1 mt-0.5">${item.deskripsi}</p>
+                            <p class="text-xs text-slate-500 line-clamp-1 mt-0.5">${item.deskripsi || ''}</p>
                             <div class="flex justify-between items-center mt-3">
-                                <span class="font-extrabold text-amber-700 text-sm">Rp ${parseInt(item.harga_jual).toLocaleString()}</span>
+                                <span class="font-extrabold text-amber-700 text-sm">Rp ${hargaJualNum.toLocaleString()}</span>
                                 <div class="flex items-center gap-2">
                                     <button onclick="ubahQty('${item.id_menu}', -1)" class="w-8 h-8 bg-slate-100 hover:bg-slate-200 rounded-lg font-bold text-slate-700 flex items-center justify-center">-</button>
                                     <span id="qty_${item.id_menu}" class="font-bold text-xs w-6 text-center">${qty}</span>
@@ -332,7 +327,8 @@
             let total = 0;
             menuData.forEach(item => {
                 let qty = keranjang[item.id_menu] || 0;
-                total += qty * parseInt(item.harga_jual);
+                let hargaNum = parseInt(item.harga_jual) || 0;
+                total += qty * hargaNum;
             });
             document.getElementById('grandTotal').innerText = `Rp ${total.toLocaleString()}`;
         }
@@ -400,7 +396,8 @@
                 menuData.forEach(item => {
                     let qty = keranjang[item.id_menu] || 0;
                     if(qty > 0) {
-                        let subtotal = qty * parseInt(item.harga_jual);
+                        let hargaNum = parseInt(item.harga_jual) || 0;
+                        let subtotal = qty * hargaNum;
                         grandTotalNum += subtotal;
                         detailPesananArr.push(`- ${item.nama_menu} (${qty}x) = Rp ${subtotal.toLocaleString()}`);
                     }
