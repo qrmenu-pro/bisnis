@@ -109,7 +109,7 @@
                 <div id="qrisContainer" class="text-center pt-2"></div>
             </div>
 
-            <button onclick="prosesKirimOrder()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl text-sm shadow-lg transition">
+            <button id="btnKonfirmasiOrder" onclick="prosesKirimOrder()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl text-sm shadow-lg transition">
                 Konfirmasi & Kirim Pesanan Sekarang 🚀
             </button>
         </div>
@@ -251,7 +251,6 @@
             fetch(`${GAS_URL}?key=${API_KEY}&action=getMenu&resto=${encodeURIComponent(currentResto)}`)
             .then(res => res.json())
             .then(resData => {
-                // Filter ketat: pastikan hanya produk berawalan PRD- yang masuk ke katalog pembeli
                 let rawData = resData.data || [];
                 menuData = rawData.filter(item => item.id_menu && String(item.id_menu).indexOf('PRD-') === 0);
                 renderKatalog();
@@ -390,6 +389,14 @@
         }
 
         function prosesKirimOrder() {
+            const btnKonfirmasi = document.getElementById('btnKonfirmasiOrder');
+            if (btnKonfirmasi) {
+                btnKonfirmasi.disabled = true;
+                btnKonfirmasi.classList.add('opacity-50', 'cursor-not-allowed');
+                btnKonfirmasi.style.pointerEvents = 'none';
+                btnKonfirmasi.innerText = "Mengirim Pesanan...";
+            }
+
             ambilLokasiAkurat(() => {
                 let detailPesananArr = [];
                 let grandTotalNum = 0;
@@ -455,6 +462,12 @@
                     hitungTotalHarga();
                 }).catch(() => {
                     alert("Gagal mengirim pesanan. Periksa koneksi internet Anda.");
+                    if (btnKonfirmasi) {
+                        btnKonfirmasi.disabled = false;
+                        btnKonfirmasi.classList.remove('opacity-50', 'cursor-not-allowed');
+                        btnKonfirmasi.style.pointerEvents = 'auto';
+                        btnKonfirmasi.innerText = "Konfirmasi & Kirim Pesanan Sekarang 🚀";
+                    }
                 });
             });
         }
