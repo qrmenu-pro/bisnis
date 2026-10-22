@@ -5,12 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Katalog Menu Pelanggan - QRMenu-Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>body { font-family: 'Plus Jakarta Sans', sans-serif; }</style>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    </style>
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col">
 
-    <!-- 1. HALAMAN FORM MASUK AWAL (NAMA, MEJA, & WA) + GEOLOKASI AKURASI TINGGI -->
+    <!-- TOAST -->
+    <div id="toastBox" class="fixed top-4 left-1/2 -translate-x-1/2 z-[100] space-y-2 w-80 max-w-[calc(100vw-2rem)]"></div>
+
+    <!-- 0. LINK TIDAK VALID -->
+    <div id="sectionError" class="hidden min-h-screen flex items-center justify-center p-6 bg-slate-900">
+        <div class="bg-white p-8 rounded-3xl w-full max-w-md shadow-2xl text-center space-y-3">
+            <div class="text-4xl">🔗</div>
+            <h2 class="text-lg font-extrabold text-slate-900">Link Toko Tidak Valid</h2>
+            <p class="text-sm text-slate-500">Silakan scan ulang barcode di meja Anda, atau minta link yang benar kepada pihak toko.</p>
+        </div>
+    </div>
+
+    <!-- 1. FORM MASUK AWAL (NAMA, MEJA, & WA) -->
     <div id="sectionFormAwal" class="hidden min-h-screen flex items-center justify-center p-6 bg-slate-900 relative">
         <div class="bg-white p-8 rounded-3xl w-full max-w-md shadow-2xl space-y-6">
             <div class="text-center">
@@ -22,17 +37,18 @@
             <form id="formAwalOrder" class="space-y-4 text-xs">
                 <div>
                     <label class="block font-semibold mb-1 uppercase tracking-wider text-slate-600">Nama Pemesan</label>
-                    <input type="text" id="inputNamaPemesan" required placeholder="Cth: Budi Santoso" class="w-full p-3.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:border-amber-600 focus:outline-none">
+                    <input type="text" id="inputNamaPemesan" required maxlength="60" autocomplete="name" placeholder="Cth: Budi Santoso" class="w-full p-3.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:border-amber-600 focus:outline-none">
                 </div>
                 <div>
                     <label class="block font-semibold mb-1 uppercase tracking-wider text-slate-600">Nomor Meja / Alamat</label>
-                    <input type="text" id="inputNoMeja" required placeholder="Cth: Meja 05 / Takeaway" class="w-full p-3.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:border-amber-600 focus:outline-none">
+                    <input type="text" id="inputNoMeja" required maxlength="60" placeholder="Cth: Meja 05 / Takeaway" class="w-full p-3.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:border-amber-600 focus:outline-none">
                 </div>
                 <div>
                     <label class="block font-semibold mb-1 uppercase tracking-wider text-slate-600">Nomor WhatsApp</label>
-                    <input type="text" id="inputWaPemesan" required placeholder="08123456789" class="w-full p-3.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:border-amber-600 focus:outline-none">
+                    <input type="tel" id="inputWaPemesan" required maxlength="20" autocomplete="tel" inputmode="numeric" placeholder="08123456789" class="w-full p-3.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:border-amber-600 focus:outline-none">
                 </div>
-                <button type="submit" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-3.5 rounded-xl text-sm transition shadow-lg shadow-amber-600/30">
+                <p class="text-[11px] text-slate-400 leading-relaxed">📍 Anda akan diminta izin lokasi agar toko dapat mengantar pesanan dengan tepat. Pesanan tetap bisa dikirim tanpa lokasi.</p>
+                <button type="submit" id="btnMulai" class="w-full bg-amber-600 hover:bg-amber-700 disabled:opacity-60 text-white font-bold py-3.5 rounded-xl text-sm transition shadow-lg shadow-amber-600/30">
                     Mulai Pilih Menu 🍽️
                 </button>
             </form>
@@ -42,11 +58,11 @@
     <!-- 2. HALAMAN UTAMA KATALOG MENU -->
     <div id="sectionKatalogMenu" class="hidden min-h-screen flex flex-col pb-24">
         <header class="bg-gradient-to-r from-amber-700 to-amber-600 text-white shadow-md sticky top-0 z-40 px-6 py-4 flex justify-between items-center">
-            <div>
-                <h1 id="namaTokoTitle" class="text-lg font-extrabold tracking-tight">🍽️ Katalog Menu</h1>
-                <p id="infoPelangganHeader" class="text-[11px] text-amber-100 opacity-90">Pemesan: - | Meja: - | WA: -</p>
+            <div class="min-w-0">
+                <h1 id="namaTokoTitle" class="text-lg font-extrabold tracking-tight truncate">🍽️ Katalog Menu</h1>
+                <p id="infoPelangganHeader" class="text-[11px] text-amber-100 opacity-90 truncate">Pemesan: - | Meja: - | WA: -</p>
             </div>
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2 flex-shrink-0">
                 <button onclick="logoutSesi()" class="text-[10px] bg-white/20 hover:bg-white/30 text-white px-2.5 py-1 rounded-lg font-bold transition">Ganti Akun</button>
                 <div class="text-xs bg-white/20 text-white px-3.5 py-1.5 rounded-full font-bold backdrop-blur-sm border border-white/30">
                     🟢 Live Order
@@ -55,7 +71,7 @@
         </header>
 
         <main class="max-w-2xl mx-auto px-4 py-6 flex-1 w-full space-y-4">
-            <!-- Kotak Riwayat Pesanan Berbasis Cache -->
+            <!-- Riwayat pesanan terakhir (cache perangkat) -->
             <div id="boxRiwayatCache" class="hidden bg-amber-50 border border-amber-200 p-4 rounded-2xl space-y-2">
                 <div class="flex justify-between items-center">
                     <h3 class="font-bold text-amber-900 text-xs">📋 Riwayat Pesanan Terakhir Anda</h3>
@@ -67,7 +83,7 @@
             <div class="mb-2">
                 <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500">Daftar Menu Tersedia</h2>
             </div>
-            
+
             <div id="gridKatalog" class="space-y-3">
                 <div class="bg-white p-6 rounded-2xl border text-center text-slate-400">Memuat katalog menu...</div>
             </div>
@@ -90,121 +106,120 @@
     <div id="modalCheckout" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center border-b pb-3">
-                <h3 class="text-base font-bold text-slate-900">💳 Pilih Metode Pembayaran</h3>
+                <h3 class="text-base font-bold text-slate-900">💳 Konfirmasi Pesanan & Pembayaran</h3>
                 <button onclick="tutupModalCheckout()" class="text-slate-400 hover:text-slate-700 font-bold text-lg">✕</button>
+            </div>
+
+            <div class="p-4 bg-amber-50 border border-amber-200 rounded-2xl space-y-1.5 text-xs">
+                <p class="font-bold text-amber-900">Ringkasan Pesanan</p>
+                <div id="ringkasanOrder" class="text-amber-800 space-y-1"></div>
+                <p class="pt-2 mt-2 border-t border-amber-200 font-extrabold text-amber-900 flex justify-between"><span>Total</span><span id="totalCheckout">Rp 0</span></p>
             </div>
 
             <div class="space-y-3 text-xs">
                 <label class="block font-semibold text-slate-700">Metode Pembayaran ke Toko</label>
                 <div class="grid grid-cols-3 gap-2">
                     <button type="button" onclick="pilihMetode('Transfer')" id="btnTransfer" class="p-3 border rounded-xl font-bold text-center transition bg-amber-50 border-amber-600 text-amber-700">🏦 Transfer Bank</button>
-                    <button type="button" onclick="pilihMetode('QRIS')" id="btnQris" class="p-3 border rounded-xl font-bold text-center transition bg-white border-slate-200 text-slate-600">📱 QRIS</button>
+                    <button type="button" onclick="pilihMetode('QRIS')" id="btnQRIS" class="p-3 border rounded-xl font-bold text-center transition bg-white border-slate-200 text-slate-600">📱 QRIS</button>
                     <button type="button" onclick="pilihMetode('Cash')" id="btnCash" class="p-3 border rounded-xl font-bold text-center transition bg-white border-slate-200 text-slate-600">💵 Cash di Kasir</button>
                 </div>
             </div>
 
             <div id="detailPaymentBox" class="p-4 bg-slate-50 rounded-2xl border space-y-2 text-xs text-slate-700">
-                <p class="font-bold">Informasi Rekening Toko:</p>
-                <p id="infoBankText">Memuat informasi pembayaran...</p>
+                <p class="font-bold">Informasi Pembayaran Toko:</p>
+                <div id="infoBankText">Memuat informasi pembayaran...</div>
                 <div id="qrisContainer" class="text-center pt-2"></div>
             </div>
 
-            <button id="btnKonfirmasiOrder" onclick="prosesKirimOrder()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl text-sm shadow-lg transition">
+            <button id="btnKonfirmasiOrder" onclick="prosesKirimOrder()" class="w-full bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3.5 rounded-xl text-sm shadow-lg transition">
                 Konfirmasi & Kirim Pesanan Sekarang 🚀
             </button>
         </div>
     </div>
 
+    <!-- 4. MODAL PESANAN BERHASIL -->
+    <div id="modalSukses" class="hidden fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-7 shadow-2xl space-y-4 text-center max-h-[90vh] overflow-y-auto">
+            <div class="h-16 w-16 bg-emerald-100 text-emerald-600 rounded-full mx-auto flex items-center justify-center text-3xl">✅</div>
+            <h3 class="text-lg font-extrabold text-slate-900">Pesanan Berhasil Dikirim!</h3>
+            <div id="isiSukses" class="text-xs text-slate-600 text-left bg-slate-50 border rounded-2xl p-4 space-y-1"></div>
+            <div id="aksiSukses" class="space-y-2"></div>
+            <button onclick="tutupModalSukses()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3 rounded-xl text-sm transition">Tutup</button>
+        </div>
+    </div>
+
     <script>
+        // ====================== KONFIGURASI ======================
         const GAS_URL = "https://script.google.com/macros/s/AKfycbxi7tce2iHuEPgYggs2ECsjgMJUWyA071G-tDUeNKuiw14lcdE-H9n2BdMLf68PPaHQ/exec";
         const API_KEY = "QRMenuProSecret2026Bandung";
-        
+        const DEV_WA = "6285222952220";   // cadangan jika WA toko belum tersedia dari server
+        const DEFAULT_IMG = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c";
+
         const urlParams = new URLSearchParams(window.location.search);
-        const currentResto = urlParams.get('resto') || "Cafe_Rokstars";
+        const currentResto = (urlParams.get('resto') || '').trim();
+        const restoLabel = currentResto.replace(/_/g, ' ');
 
-        document.getElementById('titleWelcomeResto').innerText = `Katalog ${currentResto.replace(/_/g, ' ')}`;
-
-        let dataPemesan = { nama: "", meja: "", wa: "", lat: 0, lon: 0 };
+        // ====================== STATE ======================
+        let dataPemesan = { nama: "", meja: "", wa: "", lat: null, lon: null };
         let menuData = [];
         let keranjang = {};
         let metodeBayarPilihan = "Transfer";
         let paymentInfoData = {};
-        let tokoWaKontak = "6285222952220";
+        let tokoWaKontak = DEV_WA;
+        let sedangKirim = false;
 
-        const savedSession = localStorage.getItem(`qrmenu_session_${currentResto}`);
-        const savedCart = localStorage.getItem(`qrmenu_cart_${currentResto}`);
-        const savedHistory = localStorage.getItem(`qrmenu_history_${currentResto}`);
-
-        if (savedSession) {
-            dataPemesan = JSON.parse(savedSession);
-            if (savedCart) keranjang = JSON.parse(savedCart);
-
-            document.getElementById('sectionFormAwal').classList.add('hidden');
-            document.getElementById('sectionKatalogMenu').classList.remove('hidden');
-            document.getElementById('namaTokoTitle').innerText = `🍽️ ${currentResto.replace(/_/g, ' ')}`;
-            document.getElementById('infoPelangganHeader').innerText = `Pemesan: ${dataPemesan.nama} | Meja: ${dataPemesan.meja} | WA: ${dataPemesan.wa}`;
-
-            muatDataKatalogDanPayment();
-            cekTampilkanRiwayatCache(savedHistory);
-        } else {
-            document.getElementById('sectionFormAwal').classList.remove('hidden');
-            document.getElementById('sectionKatalogMenu').classList.add('hidden');
+        // ====================== API HELPER (sinkron dengan Code.gs v2) ======================
+        async function apiGet(action, params = {}) {
+            const qs = new URLSearchParams({ key: API_KEY, action: action, ...params });
+            const res = await fetch(`${GAS_URL}?${qs.toString()}`);
+            return res.json();
         }
 
-        function ambilLokasiAkurat(callbackSuccess) {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(position => {
-                    dataPemesan.lat = position.coords.latitude;
-                    dataPemesan.lon = position.coords.longitude;
-                    if (typeof callbackSuccess === 'function') callbackSuccess();
-                }, (error) => {
-                    navigator.geolocation.getCurrentPosition(posFallback => {
-                        dataPemesan.lat = posFallback.coords.latitude;
-                        dataPemesan.lon = posFallback.coords.longitude;
-                        if (typeof callbackSuccess === 'function') callbackSuccess();
-                    }, () => {
-                        if (typeof callbackSuccess === 'function') callbackSuccess();
-                    }, { enableHighAccuracy: false, timeout: 15000 });
-                }, { enableHighAccuracy: true, timeout: 20000, maximumAge: 0 });
-            } else {
-                if (typeof callbackSuccess === 'function') callbackSuccess();
-            }
-        }
-
-        ambilLokasiAkurat(() => {
-            if (savedSession && dataPemesan.lat !== 0) {
-                kirimSinyalLokasiKeBackend();
-            }
-        });
-
-        function kirimSinyalLokasiKeBackend() {
-            fetch(GAS_URL, {
+        async function apiPost(action, payload = {}) {
+            // text/plain = simple request (tanpa preflight CORS), respons tetap terbaca
+            const res = await fetch(GAS_URL, {
                 method: 'POST',
-                mode: 'no-cors',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    key: API_KEY,
-                    action: 'simpanDataKonsumen',
-                    resto: currentResto,
-                    nama_pemesan: dataPemesan.nama || "Tamu",
-                    nomor_wa: dataPemesan.wa || "-",
-                    nomor_meja: dataPemesan.meja || "-",
-                    latitude: dataPemesan.lat,
-                    longitude: dataPemesan.lon
-                })
-            }).catch(()=>{});
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ key: API_KEY, action: action, ...payload })
+            });
+            return res.json();
         }
+
+        // ====================== UTIL ======================
+        function esc(v) {
+            return String(v === undefined || v === null ? '' : v).replace(/[&<>"']/g, c => (
+                { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
+            ));
+        }
+
+        function safeImg(u) {
+            const s = String(u || '').trim();
+            return /^https?:\/\//i.test(s) ? s : DEFAULT_IMG;
+        }
+
+        function rp(n) { return 'Rp ' + (Number(n) || 0).toLocaleString('id-ID'); }
 
         function formatNomorWA(nomor) {
-            if (!nomor) return '6285222952220';
+            if (!nomor) return '';
             let cleaned = String(nomor).replace(/\D/g, '');
-            if (cleaned.startsWith('0')) {
-                cleaned = '62' + cleaned.substring(1);
-            }
-            if (!cleaned.startsWith('62')) {
-                cleaned = '62' + cleaned;
-            }
+            if (!cleaned) return '';
+            if (cleaned.startsWith('0')) cleaned = '62' + cleaned.substring(1);
+            if (!cleaned.startsWith('62')) cleaned = '62' + cleaned;
             return cleaned;
+        }
+
+        function validCoord(lat, lon) {
+            lat = Number(lat); lon = Number(lon);
+            return isFinite(lat) && isFinite(lon) && !(lat === 0 && lon === 0) && Math.abs(lat) <= 90 && Math.abs(lon) <= 180;
+        }
+
+        function toast(msg, type) {
+            const colors = { ok: 'bg-emerald-600', error: 'bg-rose-600', warn: 'bg-amber-600' };
+            const el = document.createElement('div');
+            el.className = `${colors[type || 'ok'] || colors.ok} text-white text-xs font-bold px-4 py-3 rounded-2xl shadow-xl text-center`;
+            el.textContent = msg;
+            document.getElementById('toastBox').appendChild(el);
+            setTimeout(() => el.remove(), 4500);
         }
 
         function putarSuaraNotifikasi() {
@@ -219,125 +234,240 @@
                 gain.connect(audioCtx.destination);
                 osc.start();
                 osc.stop(audioCtx.currentTime + 0.3);
-            } catch(e) {}
+            } catch (e) {}
         }
 
-        document.getElementById('formAwalOrder').addEventListener('submit', function(e) {
-            e.preventDefault();
-            dataPemesan.nama = document.getElementById('inputNamaPemesan').value.trim();
-            dataPemesan.meja = document.getElementById('inputNoMeja').value.trim();
-            dataPemesan.wa = formatNomorWA(document.getElementById('inputWaPemesan').value.trim());
+        // ====================== LOKASI ======================
+        // Selalu resolve: {lat, lon} jika berhasil, null jika ditolak/gagal/timeout.
+        function ambilPosisi(timeoutAkurat) {
+            return new Promise(resolve => {
+                let selesai = false;
+                const done = v => { if (!selesai) { selesai = true; resolve(v); } };
+                if (!navigator.geolocation) return done(null);
 
-            if(!dataPemesan.nama || !dataPemesan.meja || !dataPemesan.wa) {
-                alert("Nama, Nomor Meja, dan WhatsApp wajib diisi lengkap!");
+                setTimeout(() => done(null), 30000);   // batas total (termasuk menunggu pemilik menekan "Izinkan")
+                const ok = p => done({ lat: p.coords.latitude, lon: p.coords.longitude });
+
+                navigator.geolocation.getCurrentPosition(ok, err => {
+                    if (err && err.code === 1) return done(null);   // izin ditolak
+                    // Fallback akurasi rendah (Wi-Fi/IP) untuk perangkat tanpa GPS
+                    navigator.geolocation.getCurrentPosition(ok, () => done(null),
+                        { enableHighAccuracy: false, timeout: 15000, maximumAge: 600000 });
+                }, { enableHighAccuracy: true, timeout: timeoutAkurat || 10000, maximumAge: 0 });
+            });
+        }
+
+        async function perbaruiLokasi(timeoutAkurat) {
+            const pos = await ambilPosisi(timeoutAkurat);
+            if (pos) { dataPemesan.lat = pos.lat; dataPemesan.lon = pos.lon; }
+            return !!pos;
+        }
+
+        function simpanSesi() {
+            localStorage.setItem(`qrmenu_session_${currentResto}`, JSON.stringify(dataPemesan));
+        }
+
+        // -> simpanDataKonsumen -> sheet Geolokasi_Konsumen (dibaca Super Admin)
+        function kirimSinyalLokasiKeBackend() {
+            if (!validCoord(dataPemesan.lat, dataPemesan.lon)) return;
+            apiPost('simpanDataKonsumen', {
+                resto: currentResto,
+                nama_pemesan: dataPemesan.nama || "Tamu",
+                nomor_wa: dataPemesan.wa || "",
+                nomor_meja: dataPemesan.meja || "-",
+                latitude: dataPemesan.lat,
+                longitude: dataPemesan.lon
+            }).catch(() => {});
+        }
+
+        // ====================== INISIALISASI ======================
+        window.addEventListener('DOMContentLoaded', () => {
+            if (!currentResto) {
+                document.getElementById('sectionError').classList.remove('hidden');
                 return;
             }
 
-            ambilLokasiAkurat(() => {
-                localStorage.setItem(`qrmenu_session_${currentResto}`, JSON.stringify(dataPemesan));
+            document.getElementById('titleWelcomeResto').textContent = `Katalog ${restoLabel}`;
+            document.title = `${restoLabel} - Katalog Menu`;
 
-                document.getElementById('sectionFormAwal').classList.add('hidden');
-                document.getElementById('sectionKatalogMenu').classList.remove('hidden');
+            let savedSession = null;
+            try { savedSession = JSON.parse(localStorage.getItem(`qrmenu_session_${currentResto}`) || 'null'); } catch (e) {}
 
-                document.getElementById('namaTokoTitle').innerText = `🍽️ ${currentResto.replace(/_/g, ' ')}`;
-                document.getElementById('infoPelangganHeader').innerText = `Pemesan: ${dataPemesan.nama} | Meja: ${dataPemesan.meja} | WA: ${dataPemesan.wa}`;
+            if (savedSession && savedSession.nama && savedSession.meja && savedSession.wa) {
+                dataPemesan = {
+                    nama: savedSession.nama, meja: savedSession.meja, wa: savedSession.wa,
+                    lat: validCoord(savedSession.lat, savedSession.lon) ? savedSession.lat : null,
+                    lon: validCoord(savedSession.lat, savedSession.lon) ? savedSession.lon : null
+                };
+                try { keranjang = JSON.parse(localStorage.getItem(`qrmenu_cart_${currentResto}`) || '{}') || {}; } catch (e) { keranjang = {}; }
 
+                tampilkanKatalog();
                 muatDataKatalogDanPayment();
-                kirimSinyalLokasiKeBackend();
-            });
+                try {
+                    const h = localStorage.getItem(`qrmenu_history_${currentResto}`);
+                    if (h) tampilkanRiwayat(JSON.parse(h));
+                } catch (e) {}
+
+                // Perbarui lokasi pembeli setiap halaman dibuka kembali
+                perbaruiLokasi(10000).then(ok => {
+                    if (ok) { simpanSesi(); kirimSinyalLokasiKeBackend(); }
+                });
+            } else {
+                document.getElementById('sectionFormAwal').classList.remove('hidden');
+                document.getElementById('sectionKatalogMenu').classList.add('hidden');
+            }
         });
 
-        function muatDataKatalogDanPayment() {
-            fetch(`${GAS_URL}?key=${API_KEY}&action=getMenu&resto=${encodeURIComponent(currentResto)}`)
-            .then(res => res.json())
-            .then(resData => {
-                let rawData = resData.data || [];
-                menuData = rawData.filter(item => item.id_menu && String(item.id_menu).indexOf('PRD-') === 0);
+        function tampilkanKatalog() {
+            document.getElementById('sectionFormAwal').classList.add('hidden');
+            document.getElementById('sectionKatalogMenu').classList.remove('hidden');
+            document.getElementById('namaTokoTitle').textContent = `🍽️ ${restoLabel}`;
+            document.getElementById('infoPelangganHeader').textContent = `Pemesan: ${dataPemesan.nama} | Meja: ${dataPemesan.meja} | WA: ${dataPemesan.wa}`;
+        }
+
+        // ====================== FORM AWAL ======================
+        document.getElementById('formAwalOrder').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const btn = document.getElementById('btnMulai');
+            const nama = document.getElementById('inputNamaPemesan').value.trim();
+            const meja = document.getElementById('inputNoMeja').value.trim();
+            const wa = formatNomorWA(document.getElementById('inputWaPemesan').value.trim());
+
+            if (!nama || !meja || !wa) {
+                toast("Nama, Nomor Meja, dan WhatsApp wajib diisi lengkap!", 'error');
+                return;
+            }
+            if (wa.length < 10 || wa.length > 15) {
+                toast("Nomor WhatsApp tidak valid. Contoh: 08123456789", 'error');
+                return;
+            }
+
+            dataPemesan.nama = nama;
+            dataPemesan.meja = meja;
+            dataPemesan.wa = wa;
+
+            btn.disabled = true;
+            btn.textContent = "Memuat lokasi...";
+            const lokasiOk = await perbaruiLokasi(10000);
+            btn.disabled = false;
+            btn.textContent = "Mulai Pilih Menu 🍽️";
+
+            simpanSesi();
+            tampilkanKatalog();
+            muatDataKatalogDanPayment();
+            kirimSinyalLokasiKeBackend();
+
+            if (!lokasiOk) {
+                toast("Lokasi tidak aktif. Pesanan tetap bisa dikirim, namun toko tidak melihat lokasi Anda.", 'warn');
+            }
+        });
+
+        // ====================== KATALOG & PAYMENT ======================
+        async function muatDataKatalogDanPayment() {
+            const grid = document.getElementById('gridKatalog');
+            grid.innerHTML = `<div class="bg-white p-6 rounded-2xl border text-center text-slate-400">Memuat katalog menu...</div>`;
+
+            try {
+                const [menuRes, payRes] = await Promise.all([
+                    apiGet('getMenu', { resto: currentResto }),
+                    apiGet('getSettingPayment', { resto: currentResto })
+                ]);
+
+                menuData = (Array.isArray(menuRes.data) ? menuRes.data : [])
+                    .filter(item => item.id_menu && String(item.id_menu).indexOf('PRD-') === 0);
+
+                // Buang item keranjang yang sudah tidak ada di menu
+                Object.keys(keranjang).forEach(id => {
+                    if (!menuData.some(m => m.id_menu === id) || !(keranjang[id] > 0)) delete keranjang[id];
+                });
+
+                paymentInfoData = payRes.data || {};
+                // WA toko diambil dari data registrasi toko (bukan nomor rekening)
+                tokoWaKontak = paymentInfoData.wa ? formatNomorWA(paymentInfoData.wa) : DEV_WA;
+
                 renderKatalog();
                 hitungTotalHarga();
-            });
-
-            fetch(`${GAS_URL}?key=${API_KEY}&action=getSettingPayment&resto=${encodeURIComponent(currentResto)}`)
-            .then(res => res.json())
-            .then(resData => {
-                paymentInfoData = resData.data || {};
-                if(paymentInfoData.norek) {
-                    tokoWaKontak = formatNomorWA(paymentInfoData.norek);
-                }
                 updatePaymentDetailBox();
-            });
+            } catch (err) {
+                grid.innerHTML = `
+                    <div class="bg-white p-6 rounded-2xl border text-center space-y-3">
+                        <p class="text-rose-500 font-semibold text-sm">Gagal memuat menu. Periksa koneksi internet Anda.</p>
+                        <button onclick="muatDataKatalogDanPayment()" class="bg-amber-600 hover:bg-amber-700 text-white font-bold px-5 py-2.5 rounded-xl text-xs">Coba Lagi</button>
+                    </div>`;
+            }
         }
 
         function renderKatalog() {
             const grid = document.getElementById('gridKatalog');
-            if(menuData.length === 0) {
-                grid.innerHTML = `<div class="bg-white p-6 rounded-2xl border text-center text-slate-400">Menu belum tersedia.</div>`;
+            if (menuData.length === 0) {
+                grid.innerHTML = `<div class="bg-white p-6 rounded-2xl border text-center text-slate-400 text-sm">Menu belum tersedia. Pastikan Anda memakai link/barcode toko yang benar.</div>`;
                 return;
             }
-            grid.innerHTML = "";
-            menuData.forEach(item => {
-                let badge = item.kategori === 'Minuman' ? 'bg-blue-100 text-blue-800' : 'bg-rose-100 text-rose-800';
-                let qty = keranjang[item.id_menu] || 0;
-                let hargaJualNum = parseInt(item.harga_jual) || 0;
 
-                let rawImg = item.gambar_url ? item.gambar_url.trim() : "";
-                let imgSrc = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c';
-                if (rawImg.startsWith('http')) {
-                    if (rawImg.includes('drive.google.com') && rawImg.includes('id=')) {
-                        let fileId = rawImg.split('id=')[1].split('&')[0];
-                        imgSrc = `https://lh3.googleusercontent.com/d/${fileId}`;
-                    } else {
-                        imgSrc = rawImg;
-                    }
-                }
+            grid.innerHTML = menuData.map(item => {
+                const badge = item.kategori === 'Minuman' ? 'bg-blue-100 text-blue-800' : 'bg-rose-100 text-rose-800';
+                const qty = keranjang[item.id_menu] || 0;
+                const harga = parseInt(item.harga_jual, 10) || 0;
+                const id = esc(item.id_menu);
 
-                grid.innerHTML += `
+                return `
                     <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex gap-4 items-center">
-                        <img src="${imgSrc}" class="w-24 h-24 object-cover rounded-xl shadow-sm flex-shrink-0 bg-slate-100" alt="Menu" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c'">
+                        <img src="${esc(safeImg(item.gambar_url))}" class="w-24 h-24 object-cover rounded-xl shadow-sm flex-shrink-0 bg-slate-100" alt="Menu" loading="lazy" onerror="this.onerror=null;this.src='${DEFAULT_IMG}'">
                         <div class="flex-1 min-w-0">
-                            <span class="text-[10px] font-bold px-2 py-0.5 rounded ${badge}">${item.kategori || 'Makanan'}</span>
-                            <h3 class="font-bold text-sm text-slate-900 mt-1 truncate">${item.nama_menu}</h3>
-                            <p class="text-xs text-slate-500 line-clamp-1 mt-0.5">${item.deskripsi || ''}</p>
+                            <span class="text-[10px] font-bold px-2 py-0.5 rounded ${badge}">${esc(item.kategori || 'Makanan')}</span>
+                            <h3 class="font-bold text-sm text-slate-900 mt-1 truncate">${esc(item.nama_menu)}</h3>
+                            <p class="text-xs text-slate-500 line-clamp-2 mt-0.5">${esc(item.deskripsi)}</p>
                             <div class="flex justify-between items-center mt-3">
-                                <span class="font-extrabold text-amber-700 text-sm">Rp ${hargaJualNum.toLocaleString()}</span>
+                                <span class="font-extrabold text-amber-700 text-sm">${rp(harga)}</span>
                                 <div class="flex items-center gap-2">
-                                    <button onclick="ubahQty('${item.id_menu}', -1)" class="w-8 h-8 bg-slate-100 hover:bg-slate-200 rounded-lg font-bold text-slate-700 flex items-center justify-center">-</button>
-                                    <span id="qty_${item.id_menu}" class="font-bold text-xs w-6 text-center">${qty}</span>
-                                    <button onclick="ubahQty('${item.id_menu}', 1)" class="w-8 h-8 bg-amber-600 hover:bg-amber-700 text-white rounded-lg font-bold flex items-center justify-center">+</button>
+                                    <button data-id="${id}" onclick="ubahQty(this.dataset.id, -1)" class="w-8 h-8 bg-slate-100 hover:bg-slate-200 rounded-lg font-bold text-slate-700 flex items-center justify-center">-</button>
+                                    <span id="qty_${id}" class="font-bold text-xs w-6 text-center">${qty}</span>
+                                    <button data-id="${id}" onclick="ubahQty(this.dataset.id, 1)" class="w-8 h-8 bg-amber-600 hover:bg-amber-700 text-white rounded-lg font-bold flex items-center justify-center">+</button>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                `;
-            });
+                    </div>`;
+            }).join('');
         }
 
         function ubahQty(id, delta) {
-            if (!keranjang[id]) keranjang[id] = 0;
-            keranjang[id] += delta;
-            if (keranjang[id] < 0) keranjang[id] = 0;
+            keranjang[id] = Math.max(0, (keranjang[id] || 0) + delta);
+            if (keranjang[id] === 0) delete keranjang[id];
 
-            document.getElementById(`qty_${id}`).innerText = keranjang[id];
+            const el = document.getElementById(`qty_${id}`);
+            if (el) el.textContent = keranjang[id] || 0;
             hitungTotalHarga();
             localStorage.setItem(`qrmenu_cart_${currentResto}`, JSON.stringify(keranjang));
         }
 
-        function hitungTotalHarga() {
-            let total = 0;
-            menuData.forEach(item => {
-                let qty = keranjang[item.id_menu] || 0;
-                let hargaNum = parseInt(item.harga_jual) || 0;
-                total += qty * hargaNum;
-            });
-            document.getElementById('grandTotal').innerText = `Rp ${total.toLocaleString()}`;
+        function itemKeranjang() {
+            return menuData
+                .map(item => ({ item: item, qty: keranjang[item.id_menu] || 0 }))
+                .filter(x => x.qty > 0)
+                .map(x => {
+                    const harga = parseInt(x.item.harga_jual, 10) || 0;
+                    return { nama: x.item.nama_menu, qty: x.qty, subtotal: x.qty * harga };
+                });
         }
 
+        function hitungTotalHarga() {
+            const total = itemKeranjang().reduce((a, x) => a + x.subtotal, 0);
+            document.getElementById('grandTotal').textContent = rp(total);
+            return total;
+        }
+
+        // ====================== CHECKOUT ======================
         function bukaModalCheckout() {
-            let totalItem = Object.values(keranjang).reduce((a, b) => a + b, 0);
-            if(totalItem === 0) {
-                alert("Silakan pilih minimal 1 menu terlebih dahulu!");
+            const items = itemKeranjang();
+            if (items.length === 0) {
+                toast("Silakan pilih minimal 1 menu terlebih dahulu!", 'warn');
                 return;
             }
+            document.getElementById('ringkasanOrder').innerHTML = items.map(x =>
+                `<div class="flex justify-between gap-3"><span>${esc(x.nama)} (${x.qty}x)</span><span class="font-semibold whitespace-nowrap">${rp(x.subtotal)}</span></div>`
+            ).join('');
+            document.getElementById('totalCheckout').textContent = rp(items.reduce((a, x) => a + x.subtotal, 0));
+            updatePaymentDetailBox();
             document.getElementById('modalCheckout').classList.remove('hidden');
         }
 
@@ -347,154 +477,174 @@
 
         function pilihMetode(metode) {
             metodeBayarPilihan = metode;
-            ['Transfer', 'Qris', 'Cash'].forEach(m => {
-                let btn = document.getElementById('btn' + m);
-                if(m === metode) {
-                    btn.className = "p-3 border rounded-xl font-bold text-center transition bg-amber-50 border-amber-600 text-amber-700";
-                } else {
-                    btn.className = "p-3 border rounded-xl font-bold text-center transition bg-white border-slate-200 text-slate-600";
-                }
+            const peta = { Transfer: 'btnTransfer', QRIS: 'btnQRIS', Cash: 'btnCash' };
+            Object.keys(peta).forEach(m => {
+                const btn = document.getElementById(peta[m]);
+                btn.className = (m === metode)
+                    ? "p-3 border rounded-xl font-bold text-center transition bg-amber-50 border-amber-600 text-amber-700"
+                    : "p-3 border rounded-xl font-bold text-center transition bg-white border-slate-200 text-slate-600";
             });
             updatePaymentDetailBox();
+        }
+
+        async function salinNorek() {
+            const teks = paymentInfoData.norek || '';
+            if (!teks) return;
+            try { await navigator.clipboard.writeText(teks); } catch (e) {
+                const t = document.createElement('textarea'); t.value = teks; document.body.appendChild(t); t.select(); document.execCommand('copy'); t.remove();
+            }
+            toast('Nomor rekening disalin', 'ok');
         }
 
         function updatePaymentDetailBox() {
             const infoText = document.getElementById('infoBankText');
             const qrisContainer = document.getElementById('qrisContainer');
+            qrisContainer.innerHTML = "";
 
-            if(metodeBayarPilihan === 'Cash') {
-                infoText.innerHTML = `Pembayaran dilakukan secara tunai/cash langsung di kasir toko saat pesanan diterima.`;
-                qrisContainer.innerHTML = "";
-            } else if(metodeBayarPilihan === 'Transfer') {
-                if(paymentInfoData.bank) {
-                    infoText.innerHTML = `Transfer ke <b>${paymentInfoData.bank}</b> : <span class="font-mono text-amber-700">${paymentInfoData.norek}</span><br>Atas Nama: ${paymentInfoData.an}`;
+            if (metodeBayarPilihan === 'Cash') {
+                infoText.textContent = 'Pembayaran dilakukan secara tunai/cash langsung di kasir toko saat pesanan diterima.';
+            } else if (metodeBayarPilihan === 'Transfer') {
+                if (paymentInfoData.bank && paymentInfoData.norek) {
+                    infoText.innerHTML = `
+                        Transfer ke <b>${esc(paymentInfoData.bank)}</b><br>
+                        <span class="font-mono text-amber-700 text-sm font-bold">${esc(paymentInfoData.norek)}</span>
+                        <button type="button" onclick="salinNorek()" class="ml-2 text-[10px] font-bold px-2 py-1 rounded-lg bg-white border border-slate-300 hover:bg-slate-100">Salin</button><br>
+                        Atas Nama: ${esc(paymentInfoData.an)}`;
                 } else {
-                    infoText.innerHTML = `Rekening bank belum diatur oleh toko.`;
+                    infoText.textContent = 'Rekening bank belum diatur oleh toko. Silakan pilih metode lain atau tanyakan ke kasir.';
                 }
-                qrisContainer.innerHTML = "";
-            } else if(metodeBayarPilihan === 'QRIS') {
-                infoText.innerHTML = `Scan barcode QRIS di bawah ini melalui aplikasi e-wallet / mobile banking Anda.`;
-                if(paymentInfoData.qris_url) {
-                    let rawQris = paymentInfoData.qris_url.trim();
-                    let qrisSrc = rawQris;
-                    if(rawQris.includes('drive.google.com') && rawQris.includes('id=')) {
-                        let fileId = rawQris.split('id=')[1].split('&')[0];
-                        qrisSrc = `https://lh3.googleusercontent.com/d/${fileId}`;
-                    }
-                    qrisContainer.innerHTML = `<img src="${qrisSrc}" class="w-32 h-32 object-contain mx-auto rounded-xl border bg-white p-1 mt-2">`;
+            } else if (metodeBayarPilihan === 'QRIS') {
+                infoText.textContent = 'Scan barcode QRIS di bawah ini melalui aplikasi e-wallet / mobile banking Anda.';
+                if (paymentInfoData.qris_url) {
+                    qrisContainer.innerHTML = `<img src="${esc(safeImg(paymentInfoData.qris_url))}" class="w-40 h-40 object-contain mx-auto rounded-xl border bg-white p-1 mt-2" alt="QRIS">`;
                 } else {
                     qrisContainer.innerHTML = `<p class="text-rose-500 font-semibold mt-2">Barcode QRIS belum di-upload oleh toko.</p>`;
                 }
             }
         }
 
-        function prosesKirimOrder() {
-            const btnKonfirmasi = document.getElementById('btnKonfirmasiOrder');
-            if (btnKonfirmasi) {
-                btnKonfirmasi.disabled = true;
-                btnKonfirmasi.classList.add('opacity-50', 'cursor-not-allowed');
-                btnKonfirmasi.style.pointerEvents = 'none';
-                btnKonfirmasi.innerText = "Mengirim Pesanan...";
-            }
+        function setTombolKonfirmasi(aktif) {
+            const btn = document.getElementById('btnKonfirmasiOrder');
+            btn.disabled = !aktif;
+            btn.textContent = aktif ? "Konfirmasi & Kirim Pesanan Sekarang 🚀" : "Mengirim Pesanan...";
+        }
 
-            ambilLokasiAkurat(() => {
-                let detailPesananArr = [];
-                let grandTotalNum = 0;
-                menuData.forEach(item => {
-                    let qty = keranjang[item.id_menu] || 0;
-                    if(qty > 0) {
-                        let hargaNum = parseInt(item.harga_jual) || 0;
-                        let subtotal = qty * hargaNum;
-                        grandTotalNum += subtotal;
-                        detailPesananArr.push(`- ${item.nama_menu} (${qty}x) = Rp ${subtotal.toLocaleString()}`);
-                    }
-                });
+        async function prosesKirimOrder() {
+            if (sedangKirim) return;
+            const items = itemKeranjang();
+            if (items.length === 0) { toast("Keranjang masih kosong.", 'warn'); return; }
 
-                let teksDetail = detailPesananArr.join('\n');
-                let totalStr = `Rp ${grandTotalNum.toLocaleString()}`;
+            sedangKirim = true;
+            setTombolKonfirmasi(false);
 
-                let payloadOrder = {
-                    key: API_KEY,
-                    action: 'simpanOrderMasuk',
+            try {
+                // Jika lokasi belum ada, coba sekali lagi (singkat) agar toko bisa melihat titik pemesan
+                if (!validCoord(dataPemesan.lat, dataPemesan.lon)) {
+                    await perbaruiLokasi(8000);
+                    simpanSesi();
+                }
+
+                const grandTotal = items.reduce((a, x) => a + x.subtotal, 0);
+                const totalStr = rp(grandTotal);
+                // Format baris ini dibaca oleh Report Kategori di panel klien -> jangan diubah
+                const baris = items.map(x => `- ${x.nama} (${x.qty}x) = ${rp(x.subtotal)}`);
+
+                const res = await apiPost('simpanOrderMasuk', {
                     resto: currentResto,
-                    nama_pemesan: `${dataPemesan.nama} (${dataPemesan.wa})`,
+                    nama_pemesan: dataPemesan.nama,
                     nomor_wa: dataPemesan.wa,
-                    detail_pesanan: detailPesananArr.join(', '),
+                    detail_pesanan: baris.join(', '),
                     total_harga: totalStr,
                     nomor_meja: dataPemesan.meja,
                     metode_bayar: metodeBayarPilihan,
-                    latitude: dataPemesan.lat,
-                    longitude: dataPemesan.lon
-                };
-
-                fetch(GAS_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payloadOrder)
-                }).then(() => {
-                    putarSuaraNotifikasi();
-                    tutupModalCheckout();
-
-                    let historyData = {
-                        waktu: new Date().toLocaleTimeString() + " - " + new Date().toLocaleDateString(),
-                        detail: detailPesananArr.join(', '),
-                        total: totalStr,
-                        metode: metodeBayarPilihan
-                    };
-                    localStorage.setItem(`qrmenu_history_${currentResto}`, JSON.stringify(historyData));
-                    tampilkanRiwayatCache(historyData);
-
-                    if(metodeBayarPilihan === 'Transfer' || metodeBayarPilihan === 'QRIS') {
-                        let pesanWa = `Halo Admin ${currentResto.replace(/_/g, ' ')}, saya ingin konfirmasi pembayaran pesanan.%0A%0A*Nama:* ${dataPemesan.nama}%0A*No Meja:* ${dataPemesan.meja}%0A*No WA:* ${dataPemesan.wa}%0A*Metode:* ${metodeBayarPilihan}%0A%0A*Daftar Pesanan:*%0A${encodeURIComponent(teksDetail)}%0A%0A*Total:* *${totalStr}*%0A%0A(Berikut saya lampirkan bukti transfer/pembayaran)`;
-                        let urlWa = `https://api.whatsapp.com/send?phone=${tokoWaKontak}&text=${pesanWa}`;
-                        
-                        if(confirm("Pesanan berhasil dikirim ke toko!\n\nKlik OK untuk langsung konfirmasi pembayaran & kirim bukti transfer ke WhatsApp Toko.")) {
-                            window.open(urlWa, '_blank');
-                        }
-                    } else {
-                        alert(`Pesanan Berhasil Dikirim!\nNama: ${dataPemesan.nama}\nMeja: ${dataPemesan.meja}\nTotal: ${totalStr}\nMetode: Cash di Kasir.\n\nSilakan menunggu pesanan di meja Anda.`);
-                    }
-
-                    keranjang = {};
-                    localStorage.removeItem(`qrmenu_cart_${currentResto}`);
-                    renderKatalog();
-                    hitungTotalHarga();
-                }).catch(() => {
-                    alert("Gagal mengirim pesanan. Periksa koneksi internet Anda.");
-                    if (btnKonfirmasi) {
-                        btnKonfirmasi.disabled = false;
-                        btnKonfirmasi.classList.remove('opacity-50', 'cursor-not-allowed');
-                        btnKonfirmasi.style.pointerEvents = 'auto';
-                        btnKonfirmasi.innerText = "Konfirmasi & Kirim Pesanan Sekarang 🚀";
-                    }
+                    latitude: validCoord(dataPemesan.lat, dataPemesan.lon) ? dataPemesan.lat : null,
+                    longitude: validCoord(dataPemesan.lat, dataPemesan.lon) ? dataPemesan.lon : null
                 });
-            });
-        }
 
-        function tampilkanRiwayatCache(data) {
-            const box = document.getElementById('boxRiwayatCache');
-            const teks = document.getElementById('teksRiwayatDetail');
-            const waktu = document.getElementById('waktuRiwayat');
+                if (res.status !== 'success') {
+                    toast(res.message || "Pesanan gagal dikirim. Silakan coba lagi.", 'error');
+                    return;
+                }
 
-            if(box && teks && waktu) {
-                box.classList.remove('hidden');
-                waktu.innerText = data.waktu;
-                teks.innerHTML = `<b>Pesanan:</b> ${data.detail}<br><b>Total:</b> ${data.total} (${data.metode})`;
+                // ---- Sukses ----
+                putarSuaraNotifikasi();
+                tutupModalCheckout();
+
+                const history = {
+                    waktu: new Date().toLocaleTimeString('id-ID') + " - " + new Date().toLocaleDateString('id-ID'),
+                    detail: baris.join(', '),
+                    total: totalStr,
+                    metode: metodeBayarPilihan
+                };
+                localStorage.setItem(`qrmenu_history_${currentResto}`, JSON.stringify(history));
+                tampilkanRiwayat(history);
+
+                tampilkanModalSukses(baris, totalStr, metodeBayarPilihan);
+
+                keranjang = {};
+                localStorage.removeItem(`qrmenu_cart_${currentResto}`);
+                renderKatalog();
+                hitungTotalHarga();
+            } catch (err) {
+                toast("Gagal mengirim pesanan. Periksa koneksi internet Anda.", 'error');
+            } finally {
+                sedangKirim = false;
+                setTombolKonfirmasi(true);
             }
         }
 
-        function cekTampilkanRiwayatCache(savedHistoryStr) {
-            if (savedHistoryStr) {
-                try {
-                    let data = JSON.parse(savedHistoryStr);
-                    tampilkanRiwayatCache(data);
-                } catch(e) {}
+        // ====================== MODAL SUKSES ======================
+        function tampilkanModalSukses(baris, totalStr, metode) {
+            document.getElementById('isiSukses').innerHTML = `
+                <p><b>Nama:</b> ${esc(dataPemesan.nama)}</p>
+                <p><b>Meja:</b> ${esc(dataPemesan.meja)}</p>
+                <p><b>Metode:</b> ${esc(metode)}</p>
+                <div class="pt-1">${baris.map(b => `<p>${esc(b.replace(/^-\s*/, '• '))}</p>`).join('')}</div>
+                <p class="pt-1 font-extrabold text-amber-700">Total: ${esc(totalStr)}</p>`;
+
+            const aksi = document.getElementById('aksiSukses');
+            if (metode === 'Transfer' || metode === 'QRIS') {
+                const pesan = [
+                    `Halo Admin ${restoLabel}, saya ingin konfirmasi pembayaran pesanan.`,
+                    ``,
+                    `*Nama:* ${dataPemesan.nama}`,
+                    `*No Meja:* ${dataPemesan.meja}`,
+                    `*No WA:* ${dataPemesan.wa}`,
+                    `*Metode:* ${metode}`,
+                    ``,
+                    `*Daftar Pesanan:*`,
+                    ...baris,
+                    ``,
+                    `*Total:* *${totalStr}*`,
+                    ``,
+                    `(Berikut saya lampirkan bukti transfer/pembayaran)`
+                ].join('\n');
+                const url = `https://api.whatsapp.com/send?phone=${tokoWaKontak}&text=${encodeURIComponent(pesan)}`;
+                aksi.innerHTML = `
+                    <a href="${esc(url)}" target="_blank" rel="noopener" class="block w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl text-sm shadow-lg transition">
+                        💬 Kirim Bukti Bayar via WhatsApp Toko
+                    </a>
+                    <p class="text-[11px] text-slate-400">Pesanan sudah masuk ke toko. Kirim bukti pembayaran agar pesanan segera diproses.</p>`;
+            } else {
+                aksi.innerHTML = `<p class="text-xs text-emerald-700 font-semibold">Pembayaran tunai di kasir. Silakan menunggu pesanan di meja Anda.</p>`;
             }
+            document.getElementById('modalSukses').classList.remove('hidden');
+        }
+
+        function tutupModalSukses() {
+            document.getElementById('modalSukses').classList.add('hidden');
+        }
+
+        // ====================== RIWAYAT & SESI ======================
+        function tampilkanRiwayat(data) {
+            document.getElementById('boxRiwayatCache').classList.remove('hidden');
+            document.getElementById('waktuRiwayat').textContent = data.waktu || '';
+            document.getElementById('teksRiwayatDetail').innerHTML =
+                `<b>Pesanan:</b> ${esc(data.detail)}<br><b>Total:</b> ${esc(data.total)} (${esc(data.metode)})`;
         }
 
         function logoutSesi() {
-            if(confirm("Apakah Anda ingin mengganti akun / data diri pemesan?")) {
+            if (confirm("Apakah Anda ingin mengganti akun / data diri pemesan?")) {
                 localStorage.removeItem(`qrmenu_session_${currentResto}`);
                 localStorage.removeItem(`qrmenu_cart_${currentResto}`);
                 localStorage.removeItem(`qrmenu_history_${currentResto}`);
